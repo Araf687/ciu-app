@@ -1,0 +1,26 @@
+
+.drawerIcons{
+    padding-left:15px;
+    padding-right:30px;
+    padding-bottom:4px ;
+    color:#040136;
+
+}
+
+.sideMenuItems:hover .drawerIcons{
+    color: white ;
+    
+}
+.sideMenuItems:hover{
+    background-color: #040136;
+    color:white;
+    
+}
+
+/* //set the margin of sidemenu's list item */
+/* class of side-menu's lis items */
+.MuiListItem-root {
+    width: 95% !important;
+    margin-left: 2.5%;
+    border-radius: 5px;
+}
