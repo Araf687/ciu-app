@@ -1,36 +1,42 @@
 import { AppBar, Badge, Divider, Drawer, Grid, IconButton, InputBase, List, ListItem, ListItemIcon, ListItemText, makeStyles, Menu, Toolbar } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import MenuIcon from '@material-ui/icons/Menu';
 import clsx from 'clsx';
-import GroupIcon from '@material-ui/icons/Group';
+import PeopleAltOutlinedIcon from '@material-ui/icons/PeopleAltOutlined';
 import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import ListAltIcon from '@material-ui/icons/ListAlt';
-import AssignmentIcon from '@material-ui/icons/Assignment';
-import EmailIcon from '@material-ui/icons/Email';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import SmsIcon from '@material-ui/icons/Sms';
+import AssignmentOutlinedIcon from '@material-ui/icons/AssignmentOutlined';
+import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
+import NotificationsNoneOutlinedIcon from '@material-ui/icons/NotificationsNoneOutlined';
+import TextsmsOutlinedIcon from '@material-ui/icons/TextsmsOutlined';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
+import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import SearchIcon from '@material-ui/icons/Search';
 import './Header.css';
+import { contextMenuWidth } from '../../App';
+import userImg from '../../image/rabiul.jpg';
+
 
 const drawerWidth=250;
-const drawerIconWidth=80;
-
+const drawerIconWidth=70;
 const useStyle=makeStyles(theme=>({
     root:{
         display:'flex',
     },
     appBar:{
         width: `calc(100% - ${drawerIconWidth}px)`,
+        boxShadow:'none',
         transition:theme.transitions.create(['width'],{
             duration:'1s',
         }),
         backgroundColor:'white',
         [theme.breakpoints.up('md')]:{
             paddingRight:'50px',
+        },
+        [theme.breakpoints.down('md')]:{
+            width:'100%'
         }
-
-
+        
     },
     shiftAppBar:{
         width: `calc(100% - ${drawerWidth}px)`,
@@ -45,9 +51,9 @@ const useStyle=makeStyles(theme=>({
     },
     navIcons:{
         color:'#040136',
-        margin:'6px 20px 6px 0px',
+        margin:'3px 15px 0px 0px',
         borderRadius:'5px',
-        padding:'8px',
+        padding:'4px 8px',
         ['&:hover']:{
             backgroundColor:'#040136',
             color:'white',
@@ -55,8 +61,13 @@ const useStyle=makeStyles(theme=>({
         }
     },
     drawer:{
-        width:drawerWidth,
-        backgroundColor:'lightgrey',
+        // backgroundColor:'#f5f5fa',
+        backgroundColor:'white',
+        overflowX:'hidden',
+        border:'none',
+        [theme.breakpoints.down('md')]:{
+            display:'none',
+        }
 
     },
   
@@ -65,7 +76,6 @@ const useStyle=makeStyles(theme=>({
         transition:theme.transitions.create(['width'],{
             duration:'1s',
         }),
-        backgroundColor:'#e9e9f0',
 
     },
     drawerClose:{
@@ -73,8 +83,9 @@ const useStyle=makeStyles(theme=>({
         transition:theme.transitions.create(['width'],{
             duration:'1s',
         }),
-        backgroundColor:'#f5f5fa',
-
+    },
+    displayNone:{
+        display:'none'
     },
     userDetails:{
         textAlign:'center',
@@ -93,11 +104,10 @@ const useStyle=makeStyles(theme=>({
     
     userDetailsThumbnail:{
         textAlign:'center',
-        margin:'20px 0px',
         ['& img']:{
             border:'5px solid white',
-            height:'60px',
-            width:'60px',
+            height:'58px',
+            width:'58px',
             borderRadius:'15px',
             transition:theme.transitions.create(['width','height'],{
                 duration:'1s',
@@ -110,18 +120,18 @@ const useStyle=makeStyles(theme=>({
             duration:'1s',
         }),
     },
-    search:{
-        height:'30px',
-        margin:'10px 10px',
-        padding:'0px 5px',
-        border:'2px solid lightgrey',
-        [theme.breakpoints.up('sm')]:{
-            width:'500px',
-        },
-        borderRadius:'8px',
+    // search:{
+    //     height:'30px',
+    //     margin:'10px 10px',
+    //     padding:'0px 5px',
+    //     border:'2px solid lightgrey',
+    //     [theme.breakpoints.up('sm')]:{
+    //         width:'500px',
+    //     },
+    //     borderRadius:'8px',
 
 
-    }
+    // }
 
 }))
 
@@ -129,11 +139,12 @@ const Header = () => {
 
     const classes=useStyle();
     const [open,setOpen]=useState(false);
-    const userImg='https://lh3.googleusercontent.com/proxy/j6FrzaXiDyEYacL9YX4gkbJzOZBhYOA6cGFX-_Bl2i_ZI7ckikxgc2PGovFOvZOKvDvE1xaaqyzq6U_6wQoHKZJD93PxsRjzM89Uezu6L8u86Q57';
+    const [,setSideMenuWidth]=useContext(contextMenuWidth);
     const userId='RabiulHossain@ciu.edu.bd'
     const clickHandle =()=>
     {
-        setOpen(!open)
+        setOpen(!open);
+        open?setSideMenuWidth(drawerIconWidth):setSideMenuWidth(drawerWidth);
     }
 
     
@@ -141,7 +152,7 @@ const Header = () => {
         <Drawer  
         variant='permanent'
         className={clsx(classes.drawer,{[classes.drawerOpen]:open,[classes.drawerClose]:!open})}
-        classes={{ paper: clsx({
+        classes={{ paper: clsx(classes.drawer,{
               [classes.drawerOpen]: open,
               [classes.drawerClose]: !open,
             }),
@@ -152,10 +163,9 @@ const Header = () => {
                 <ListItem  >
                     
                         <MenuIcon
-                                onClick={clickHandle}
-                                className='drawerIcons'
-                                
-                            >
+                            onClick={clickHandle}
+                            className='drawerIcons'     
+                        >
                         </MenuIcon>
                 </ListItem>
                 <Divider></Divider>
@@ -169,23 +179,27 @@ const Header = () => {
 
             <List>
                 <ListItem className='sideMenuItems'>
-                    <GroupIcon className='drawerIcons' id='x'></GroupIcon>
-                    <ListItemText  primary="students"></ListItemText>
+                    <HomeOutlinedIcon className='drawerIcons' id='x'></HomeOutlinedIcon>
+                    <ListItemText className={clsx({[classes.displayNone]:!open})} primary="Dashboard"></ListItemText>
+                </ListItem>
+                <ListItem className='sideMenuItems'>
+                    <PeopleAltOutlinedIcon className='drawerIcons' id='x'></PeopleAltOutlinedIcon>
+                    <ListItemText className={clsx({[classes.displayNone]:!open})} primary="students"></ListItemText>
                 </ListItem>
             
                 <ListItem className='sideMenuItems'>
                     <PeopleOutlineIcon className='drawerIcons' />
-                    <ListItemText  primary="teachers"></ListItemText>
+                    <ListItemText  className={clsx({[classes.displayNone]:!open})} primary="teachers"></ListItemText>
                 </ListItem>
             
                 <ListItem className='sideMenuItems'>
                     <ListAltIcon className='drawerIcons'/>
-                    <ListItemText primary="offerlist"></ListItemText>
+                    <ListItemText className={clsx({[classes.displayNone]:!open})} primary="offerlist"></ListItemText>
                 </ListItem>
             
                 <ListItem className='sideMenuItems'>
-                    <AssignmentIcon className='drawerIcons'></AssignmentIcon>
-                    <ListItemText  primary="result"></ListItemText>
+                    <AssignmentOutlinedIcon  className='drawerIcons'></AssignmentOutlinedIcon>
+                    <ListItemText className={clsx({[classes.displayNone]:!open})} primary="result"></ListItemText>
                 </ListItem>
             </List>
     
@@ -199,7 +213,8 @@ const Header = () => {
             <AppBar position='fixed' className={clsx(classes.menu,classes.appBar,{[classes.shiftAppBar]:open})} >
                 <Grid container >
                     <Grid className={classes.searchPortion}>
-                        <div >
+                        ""
+                        {/* <div >
                             
                             <InputBase 
                             className={classes.search} 
@@ -209,19 +224,19 @@ const Header = () => {
 
                             </InputBase>
 
-                        </div>
+                        </div> */}
                         
                     </Grid>
                     <Grid item md></Grid>
                     <Grid >
                         <IconButton className={classes.navIcons}>
-                            <Badge><EmailIcon ></EmailIcon></Badge>
+                            <Badge><EmailOutlinedIcon ></EmailOutlinedIcon></Badge>
                         </IconButton>
                         <IconButton className={classes.navIcons}>
-                            <Badge ><NotificationsIcon /></Badge>
+                            <Badge ><NotificationsNoneOutlinedIcon /></Badge>
                         </IconButton>
                         <IconButton className={classes.navIcons}>
-                            <Badge><SmsIcon ></SmsIcon></Badge>
+                            <Badge><TextsmsOutlinedIcon/></Badge>
                         </IconButton>
                         <IconButton className={classes.navIcons}>
                             <Badge><PowerSettingsNewIcon ></PowerSettingsNewIcon></Badge>
