@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
       color:'#bdbdbd',
     },
     ['& small']:{
-      fontSize:'12px',
+      fontSize:'13px',
       fontWeight:'400',
 
     },
@@ -76,15 +76,15 @@ const Dashboard = () => {
             <h2>100<small> of 2000</small></h2>
             <small>3% higher than last semester.</small>
             <div className={ classes.progress}>
-              <div className={classes.progressBar} style={{width:'10%',}}></div>
+              <div className={classes.progressBar} style={{width:'15%',}}></div>
             </div>
           </Paper>
         </Grid>
         <Grid item xs={12} sm={3}>
           <Paper className={classes.paper}>
-            <h6>Courses countinueing</h6>
+            <h6>Courses Offered</h6>
             <h2>15<small> of 40</small></h2>
-            <small>completed of 25% of the courses in this semester</small>
+            <small>completed 25% of the semester</small>
             <div className={ classes.progress}>
               <div className={classes.progressBar} style={{width:'25%',}}></div>
             </div>
@@ -92,21 +92,21 @@ const Dashboard = () => {
         </Grid>
         <Grid item xs={12} sm={3}>
           <Paper className={classes.paper}>
-            <h6>Course Offered</h6>
-            <h2>15<small> of 40</small></h2>
-            <small>completed of 25% of the courses in this semester</small>
+            <h6>Tasks</h6>
+            <h2>2<small> of 4</small></h2>
+            <small>2 tasks completed.</small>
             <div className={ classes.progress}>
-              <div className={classes.progressBar}></div>
+              <div className={classes.progressBar} style={{width:'25%',}}></div>
             </div>
           </Paper>
         </Grid>
         <Grid item xs={12} sm={3}>
           <Paper className={classes.paper}>
-            <h6>New Students</h6>
-            <h2>100<small> of 2000</small></h2>
-            <small>3% higher than last semester.</small>
+            <h6>Emails</h6>
+            <h2>70<small> of 200</small></h2>
+            <small>Pending Emails.</small>
             <div className={ classes.progress}>
-              <div className={classes.progressBar}></div>
+              <div className={classes.progressBar} style={{width:'38%',}}></div>
             </div>
           </Paper>
         </Grid>
