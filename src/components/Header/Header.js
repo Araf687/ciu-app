@@ -15,6 +15,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import './Header.css';
 import { contextMenuWidth } from '../../App';
 import userImg from '../../image/rabiul.jpg';
+import Sidebar from '../Sidebar/Sidebar';
 
 
 const drawerWidth=250;
@@ -60,66 +61,7 @@ const useStyle=makeStyles(theme=>({
 
         }
     },
-    drawer:{
-        // backgroundColor:'#f5f5fa',
-        backgroundColor:'white',
-        overflowX:'hidden',
-        border:'none',
-        [theme.breakpoints.down('md')]:{
-            display:'none',
-        }
-
-    },
-  
-    drawerOpen:{
-        width:drawerWidth,
-        transition:theme.transitions.create(['width'],{
-            duration:'1s',
-        }),
-
-    },
-    drawerClose:{
-        width:drawerIconWidth,
-        transition:theme.transitions.create(['width'],{
-            duration:'1s',
-        }),
-    },
-    displayNone:{
-        display:'none'
-    },
-    userDetails:{
-        textAlign:'center',
-        margin:'20px 0px',
-        ['& img']:{
-            height:'100px',
-            width:'100px',
-            
-            borderRadius:'5px',
-            transition:theme.transitions.create(['width','height'],{
-                duration:'1s',
-            }),
-        },
-        
-    },
     
-    userDetailsThumbnail:{
-        textAlign:'center',
-        ['& img']:{
-            border:'5px solid white',
-            height:'58px',
-            width:'58px',
-            borderRadius:'15px',
-            transition:theme.transitions.create(['width','height'],{
-                duration:'1s',
-            }),
-        },
-        ['& strong']:{
-            display:'none',
-        },
-        transition:theme.transitions.create(['width','height'],{
-            duration:'1s',
-        }),
-    },
     // search:{
     //     height:'30px',
     //     margin:'10px 10px',
@@ -138,79 +80,14 @@ const useStyle=makeStyles(theme=>({
 const Header = () => {
 
     const classes=useStyle();
-    const [open,setOpen]=useState(false);
-    const [,setSideMenuWidth]=useContext(contextMenuWidth);
-    const userId='RabiulHossain@ciu.edu.bd'
-    const clickHandle =()=>
-    {
-        setOpen(!open);
-        open?setSideMenuWidth(drawerIconWidth):setSideMenuWidth(drawerWidth);
+    const [appbarShift,setAppbarShift]=useState(false);
+    const handleShift=(value)=>{
+        setAppbarShift(value)
     }
-
-    
-    const sideMenu=(
-        <Drawer  
-        variant='permanent'
-        className={clsx(classes.drawer,{[classes.drawerOpen]:open,[classes.drawerClose]:!open})}
-        classes={{ paper: clsx(classes.drawer,{
-              [classes.drawerOpen]: open,
-              [classes.drawerClose]: !open,
-            }),
-          }}
-        >
-
-            <List >
-                <ListItem  >
-                    
-                        <MenuIcon
-                            onClick={clickHandle}
-                            className='drawerIcons'     
-                        >
-                        </MenuIcon>
-                </ListItem>
-                <Divider></Divider>
-                
-                <div className={clsx({[classes.userDetails]:open,[classes.userDetailsThumbnail]:!open})}>
-                    <img src={userImg} alt=""/>
-                    <strong>{userId}</strong>
-                </div>
-                <Divider></Divider>
-            </List>
-
-            <List>
-                <ListItem className='sideMenuItems'>
-                    <HomeOutlinedIcon className='drawerIcons' id='x'></HomeOutlinedIcon>
-                    <ListItemText className={clsx({[classes.displayNone]:!open})} primary="Dashboard"></ListItemText>
-                </ListItem>
-                <ListItem className='sideMenuItems'>
-                    <PeopleAltOutlinedIcon className='drawerIcons' id='x'></PeopleAltOutlinedIcon>
-                    <ListItemText className={clsx({[classes.displayNone]:!open})} primary="students"></ListItemText>
-                </ListItem>
-            
-                <ListItem className='sideMenuItems'>
-                    <PeopleOutlineIcon className='drawerIcons' />
-                    <ListItemText  className={clsx({[classes.displayNone]:!open})} primary="teachers"></ListItemText>
-                </ListItem>
-            
-                <ListItem className='sideMenuItems'>
-                    <ListAltIcon className='drawerIcons'/>
-                    <ListItemText className={clsx({[classes.displayNone]:!open})} primary="offerlist"></ListItemText>
-                </ListItem>
-            
-                <ListItem className='sideMenuItems'>
-                    <AssignmentOutlinedIcon  className='drawerIcons'></AssignmentOutlinedIcon>
-                    <ListItemText className={clsx({[classes.displayNone]:!open})} primary="result"></ListItemText>
-                </ListItem>
-            </List>
-    
-        </Drawer>);
-
-   
-
     return (
         <div className={classes.root}>
             
-            <AppBar position='fixed' className={clsx(classes.menu,classes.appBar,{[classes.shiftAppBar]:open})} >
+            <AppBar position='fixed' className={clsx(classes.menu,classes.appBar,{[classes.shiftAppBar]:appbarShift})} >
                 <Grid container >
                     <Grid className={classes.searchPortion}>
                         ""
@@ -246,7 +123,7 @@ const Header = () => {
 
                 </Grid>
             </AppBar>
-            {sideMenu}
+            <Sidebar shift={handleShift}></Sidebar>
         </div>
     );
 };

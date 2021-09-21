@@ -72,9 +72,9 @@ export default function CenteredGrid() {
             <h2>100<small> of 2000</small></h2>
             <small>3% higher than last semester.</small>
             <div className={ classes.progress}>
-            <div className={classes.progressbar}>
+              <div className={classes.progressbar}>
 
-            </div>
+              </div>
             </div>
         </div>
         </Grid>

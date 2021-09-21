@@ -1,4 +1,4 @@
-
+/* 
 .drawerIcons{
     padding-left:15px;
     padding-right:15px;
@@ -34,20 +34,20 @@
 
 
 /* scrollbar customization */
-::-webkit-scrollbar {
+/* ::-webkit-scrollbar {
     width: 4px;
-  }
+  } */
   
   /* Track */
-  ::-webkit-scrollbar-track {
+  /* ::-webkit-scrollbar-track {
     background: #f1f1f1;
-  }
+  } */
   
   /* Handle */
-  ::-webkit-scrollbar-thumb {
+  /* ::-webkit-scrollbar-thumb {
     background: #f5f5f5;
-  }
+  } */
   
   /* Handle on hover */
-  ::-webkit-scrollbar-thumb:hover {
-    background: #e0dede;}
+  /* ::-webkit-scrollbar-thumb:hover {
+    background: #e0dede;}  */
