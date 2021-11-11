@@ -79,7 +79,7 @@ const Dashboard = () => {
           <div className={classes.heading}>
             <h2>Dashboard</h2>
             <p><FaHome/> CIU App / Dashboard</p>
-            </div>
+          </div>
           
         </Grid>
         <Grid item xs={12} sm={3}>

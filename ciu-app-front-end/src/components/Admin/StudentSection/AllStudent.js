@@ -9,10 +9,11 @@ const useStyles=makeStyles(theme=>({
             fontSize:'28px',
             fontWeight:'400',
           },
-          ['& p']:{
+          ['& span']:{
             margin:'6px 0 0 2px',
             fontSize:'15px'
-          }
+          },
+          marginBottom:'30px',
 
     },
 }))  
@@ -25,7 +26,7 @@ const AllStudent = () => {
                 <Grid item xs={12}>
                     <div className={classes.breadcumbs}>
                         <h2>All Students</h2>
-                        <span><Link to="/dashboard">Home</Link> / All Students</span> 
+                        <span><Link to="/dashboard">Dashboard</Link> / All Students</span> 
                     </div>
                 </Grid>
             </Grid>
