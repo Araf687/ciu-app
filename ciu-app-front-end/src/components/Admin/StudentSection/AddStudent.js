@@ -24,12 +24,20 @@ const AddStudent = () => {
     return (
         <section>
             <Grid container>
-                <Grid></Grid>
+                <Grid item xs={12}>
+                    <div className={classes.breadcumbs}>
+                        <h2>Add Student</h2>
+                        <span><Link to="/dashboard">Home</Link> / <b>Add Student</b></span> 
+                    </div>
+
+                </Grid>
+                <Grid item xs={12}>
+
+                </Grid>
+                <Grid item xs={12}>
+
+                </Grid>
             </Grid>
-            <div className={classes.breadcumbs}>
-                <h2>Add Student</h2>
-               <span><Link>Home</Link> / <b>Add Student</b></span> 
-            </div>
        
         </section>
     );
