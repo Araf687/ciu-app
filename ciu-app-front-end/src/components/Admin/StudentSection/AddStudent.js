@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {Grid, makeStyles, Paper} from '@material-ui/core'
 import { Link } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import TextField from "@mui/material/TextField";
 import { inputLabelClasses } from "@mui/material/InputLabel";
-import { Fragment, useState } from "react";
-import { DatePicker, KeyboardDatePicker } from "@material-ui/pickers";
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import DesktopDatePicker from '@mui/lab/DesktopDatePicker';
 
 
 
@@ -59,7 +60,11 @@ const AddStudent = () => {
     const { register, handleSubmit } = useForm();
     const onSubmit = (data) => console.log(data);
 
+    const [value, setValue] = useState({});
 
+    const handleChange = (newValue) => {
+        setValue(newValue);
+      }
     return (
         <section>
             <div className={classes.breadcumbs}>
@@ -121,12 +126,28 @@ const AddStudent = () => {
                               />
                         </Grid>
                         <Grid item xs={12} lg={4}>
-                            <Fragment>
-                                <DatePicker
-                                    variant="inline"
-                                    label="Basic example"
-                                />
-                            </Fragment>
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <DesktopDatePicker
+                            label="Date of birth"
+                            inputFormat="MM/dd/yyyy"
+                            value={value}
+                            onChange={handleChange}
+                            renderInput={(params) => 
+                                        <TextField 
+                                            {...params} 
+                                            variant="standard"
+                                            InputLabelProps={{
+                                                sx: {
+                                                  
+                                                  [`&.${inputLabelClasses.shrink}`]: {
+                                                    color: "red"
+                                            }} }}
+                                             {...register("phone")}
+                                             className={classes.inputBox} 
+                                        />
+                                    }
+                        />
+                        </LocalizationProvider>
                         </Grid>
                         <Grid item xs={12} lg={4}>
                             <TextField

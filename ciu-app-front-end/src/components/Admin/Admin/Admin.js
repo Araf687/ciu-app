@@ -11,6 +11,7 @@ import Header from '../../Header/Header';
 import Dashboard from '../DashBoard/Dashboard';
 import AddStudent from '../StudentSection/AddStudent';
 import AllStudent from '../StudentSection/AllStudent';
+import Practise from '../../Practise';
 import AddTeachers from '../TeacherSection/AddTeachers';
 import AllTeachers from '../TeacherSection/AllTeachers';
 
@@ -50,7 +51,8 @@ const Admin = () => {
                             <Dashboard></Dashboard>
                         </Route>
                         <Route path="/allStudents">
-                            <AllStudent></AllStudent>
+                            {/* <AllStudent></AllStudent> */}
+                            <Practise></Practise>
                         </Route>
                         <Route path="/addStudents">
                             <AddStudent></AddStudent>
