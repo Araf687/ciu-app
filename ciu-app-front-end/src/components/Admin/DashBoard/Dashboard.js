@@ -35,18 +35,19 @@ const useStyles = makeStyles((theme) => ({
       margin:'0',
     },
     ['& h2']:{
-      fontSize:'35px',
+      fontSize:'30px',
       fontWeight:'400',
       margin:'6px 0px',
       color:'#bdbdbd',
     },
     ['& small']:{
-      fontSize:'13px',
+      fontSize:'12px',
       fontWeight:'400',
 
     },
     ['& h6']:{
-      fontSize:'20px',
+      height:"40px",
+      fontSize:'19px',
       fontWeight:'500',
       color:'#070764',
       
@@ -90,7 +91,7 @@ const Dashboard = () => {
                 <h2>100<small> of 2000</small></h2>
               </div>
               <div>
-                <IoIosPeople style={{fontSize:'5rem',color:'rgb(5 120 158 / 14%)',marginRight:'1rem',}}/>
+                <IoIosPeople style={{fontSize:'4.5rem',color:'rgb(5 120 158 / 14%)',marginRight:'1rem',}}/>
               </div>
             </div>
             <small>3% higher than last semester.</small>
@@ -123,7 +124,7 @@ const Dashboard = () => {
                 <h6>Tasks</h6>
                 <h2>2<small> of 4</small></h2>  
               </div>
-              <div><BsListTask style={{fontSize:'5rem',color:'rgb(5 120 158 / 14%)',marginRight:'1.5rem',}}/></div>
+              <div><BsListTask style={{fontSize:'4.5rem',color:'rgb(5 120 158 / 14%)',marginRight:'1.5rem',}}/></div>
             </div>
             <small>2 tasks +completed.</small>
             <div className={ classes.progress}>

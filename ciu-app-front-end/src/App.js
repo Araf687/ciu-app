@@ -17,9 +17,13 @@ export const contextUser=createContext();
 
 
 
-function App() {
+function App() { 
+  const [user,setUser]=useState();
+  //this usestate keeps that wheather you click on add student or add  teacher link in sidebar. and it sets 3 values
+
+  const [addOptions,setAddOptions]=useState({title:"Add student",fieldNam:"Student Id", fetchUrl:"addStudent"});
   return (
-    <contextUser.Provider>
+    <contextUser.Provider value={[user,setUser,addOptions,setAddOptions]}>
         <Router>
           <Switch>
           <Route exact path="/">
@@ -41,6 +45,9 @@ function App() {
               <Admin></Admin>
             </Route>
             <Route path="/addTeachers">
+              <Admin></Admin>
+            </Route>
+            <Route path="/offerlist">
               <Admin></Admin>
             </Route>
             <Route path="*">

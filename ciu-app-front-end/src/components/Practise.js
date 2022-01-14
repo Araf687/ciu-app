@@ -1,46 +1,35 @@
-// /* eslint-disable no-underscore-dangle */
-// import React from "react";
-// import TextField from "@material-ui/core/TextField";
-// import DesktopDatePicker from '@mui/lab/DesktopDatePicker';
-
-// export default function DatePickersVariants(demoProps) {
-//   const [value, setValue] = React.useState({});
-
-//   return (
-//     <React.Fragment>
-//       <DesktopDatePicker
-//         label="For desktop"
-//         value={value}
-//         minDate={new Date("2017-01-01")}
-//         onChange={(newValue) => setValue(newValue)}
-//         renderInput={(props) => <TextField {...props} />}
-//       />
-//     </React.Fragment>
-//   );
-// }
 import * as React from 'react';
-import TextField from '@mui/material/TextField';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import DesktopDatePicker from '@mui/lab/DesktopDatePicker';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
-export default function MaterialUIPickers() {
-  const [value, setValue] = React.useState({});
+export default function SelectVariants() {
+  const [age, setAge] = React.useState('');
 
-  const handleChange = (newValue) => {
-    setValue(newValue);
+  const handleChange = (event) => {
+    setAge(event.target.value);
   };
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <DesktopDatePicker
-          variant="standard-search"
-          label="Date desktop"
-          inputFormat="MM/dd/yyyy"
-          value={value}
+    <div>
+      <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+        <InputLabel id="demo-simple-select-standard-label">Age</InputLabel>
+        <Select
+          labelId="demo-simple-select-standard-label"
+          id="demo-simple-select-standard"
+          value={age}
           onChange={handleChange}
-          renderInput={(params) => <TextField {...params} />}
-       />
-    </LocalizationProvider>
+          label="Age"
+        >
+          <MenuItem value="">
+            <em>None</em>
+          </MenuItem>
+          <MenuItem value={10}>Ten</MenuItem>
+          <MenuItem value={20}>Twenty</MenuItem>
+          <MenuItem value={30}>Thirty</MenuItem>
+        </Select>
+      </FormControl>
+          </div>
   );
 }

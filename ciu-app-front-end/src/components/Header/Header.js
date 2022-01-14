@@ -18,7 +18,7 @@ import userImg from '../../image/rabiul.jpg';
 import Sidebar from '../Sidebar/Sidebar';
 
 
-const drawerWidth=250;
+const drawerWidth=220;
 const drawerIconWidth=70;
 const useStyle=makeStyles(theme=>({
     root:{

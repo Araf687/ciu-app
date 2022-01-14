@@ -18,7 +18,8 @@ import './Sidebar.css';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import { contextAdmin } from '../Admin/Admin/Admin';
-const drawerWidth=250;
+import { contextUser } from '../../App';
+const drawerWidth=220;
 const drawerIconWidth=70;
 
 const useStyles=makeStyles(theme=>({
@@ -102,7 +103,25 @@ const useStyles=makeStyles(theme=>({
     listIcon:{
         marginRight:'10px'
 
-    }
+    },
+    scrollBar: {
+        '&::-webkit-scrollbar': {
+          width: '0.4em',
+          height:"50px",
+          
+        },
+        '&::-webkit-scrollbar-track': {
+          '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.00)'
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: '#1976d2',
+          outline: '1px solid slategrey',
+          '&:hover':{
+              backgroundColor:'#164e8b',
+          }
+        },
+
+      }
 
 }))
 
@@ -114,6 +133,10 @@ const Sidebar = (props) => {
     const userId='RabiulHossain@ciu.edu.bd'
     const [openStudentList, setStudentOpenList] = useState(false);
     const [openTeachers,setOpenTeachers]=useState(false);
+
+    const [,,,setAddOptions]=useContext(contextUser);
+   
+    
 
     const handleClick = (stateFunction,state) => {
         stateFunction(!state);
@@ -130,7 +153,7 @@ const Sidebar = (props) => {
             <Drawer  
             variant='permanent'
             className={clsx(classes.drawer,{[classes.drawerOpen]:open,[classes.drawerClose]:!open})}
-            classes={{ paper: clsx(classes.drawer,{
+            classes={{ paper: clsx(classes.drawer,classes.scrollBar,{
                 [classes.drawerOpen]: open,
                 [classes.drawerClose]: !open,
                 }),
@@ -174,7 +197,7 @@ const Sidebar = (props) => {
                         <Link to="/addStudents">
                             <ListItem button>
                                 <PeopleAltOutlinedIcon className={classes.drawerIcons}></PeopleAltOutlinedIcon>
-                                <ListItemText primary="Add Students" />
+                                <ListItemText primary="Add Students" onClick={()=>{setAddOptions({title:"Add student",fieldName:"Student Id", fetchUrl:"addStudent"})}}/>
                             </ListItem>
                         </Link>
                         <Link>
@@ -186,7 +209,7 @@ const Sidebar = (props) => {
                         
                     </Collapse>
                 {/* ------------------//--------------- */}
-                    <ListItem buttton className={classes.sideMenuItems} onClick={()=>{handleClick(setOpenTeachers,openTeachers);}}>
+                    <ListItem button className={classes.sideMenuItems} onClick={()=>{handleClick(setOpenTeachers,openTeachers);}}>
                         <PeopleOutlineIcon className={classes.drawerIcons} />
                         <ListItemText  className={clsx({[classes.displayNone]:!open})} primary={"teachers"}></ListItemText>
                         <strong className={clsx({[classes.displayNone]:!open},classes.listIcon)}>{openTeachers ? <RemoveIcon /> : <AddIcon />}</strong>
@@ -198,7 +221,7 @@ const Sidebar = (props) => {
                                 <ListItemText primary="All Teachers" />
                             </ListItem>
                         </Link>
-                        <Link to="/addTeachers">
+                        <Link to="/addTeachers" onClick={()=>{setAddOptions({title:"Add Teacher",fieldName:"Teacher Id", fetchUrl:"addTeacher"})}}>
                             <ListItem button>
                                 <PeopleAltOutlinedIcon className={classes.drawerIcons}></PeopleAltOutlinedIcon>
                                 <ListItemText primary="Add Teachers" />
@@ -213,7 +236,7 @@ const Sidebar = (props) => {
                         
                     </Collapse>
                 
-                    <Link to=""><ListItem className={classes.sideMenuItems}>
+                    <Link to="/offerlist"><ListItem className={classes.sideMenuItems}>
                         <ListAltIcon className={classes.drawerIcons}/>
                         <ListItemText className={clsx({[classes.displayNone]:!open})} primary={"offerlist"}></ListItemText>
                     </ListItem></Link>

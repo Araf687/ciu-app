@@ -14,6 +14,7 @@ import AllStudent from '../StudentSection/AllStudent';
 import Practise from '../../Practise';
 import AddTeachers from '../TeacherSection/AddTeachers';
 import AllTeachers from '../TeacherSection/AllTeachers';
+import OfferList from '../../OfferList/OfferList';
 
 
 export const contextAdmin=createContext();
@@ -51,8 +52,8 @@ const Admin = () => {
                             <Dashboard></Dashboard>
                         </Route>
                         <Route path="/allStudents">
-                            {/* <AllStudent></AllStudent> */}
-                            <Practise></Practise>
+                            <AllStudent></AllStudent>
+                            {/* <Practise></Practise> */}
                         </Route>
                         <Route path="/addStudents">
                             <AddStudent></AddStudent>
@@ -61,7 +62,10 @@ const Admin = () => {
                             <AllTeachers></AllTeachers>
                         </Route>
                         <Route path="/addTeachers">
-                            <AddTeachers></AddTeachers>
+                            <AddStudent></AddStudent>
+                        </Route>
+                        <Route path="/offerlist">
+                            <OfferList></OfferList>
                         </Route>
                         
                     </Switch>
