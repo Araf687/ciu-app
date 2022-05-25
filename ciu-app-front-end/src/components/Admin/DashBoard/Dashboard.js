@@ -1,5 +1,5 @@
-import { Grid, makeStyles, Paper } from '@material-ui/core';
-import React from 'react';
+import { Grid, makeStyles, Paper,Button} from '@material-ui/core';
+import React, { useContext, useEffect, useState } from 'react';
 import { FaHome } from "react-icons/fa";
 import ProgressBar from '../../ProgressBar/ProgressBar';
 import './Dashboard.css';
@@ -8,6 +8,11 @@ import { ImMail3} from "react-icons/im";
 import { IoIosPeople } from "react-icons/io";
 import { BsListTask } from "react-icons/bs";
 import { DiGhostSmall } from "react-icons/di";
+import CiuCalendar from '../../CiuCalendar/Calendar';
+import AddIcon from '@material-ui/icons/Add';
+import CreateEvent from '../../Events/CreateEvent';
+import Events from '../../Events/Events';
+import { contextUser } from '../../../App';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -66,12 +71,47 @@ const useStyles = makeStyles((theme) => ({
     boxShadow:'0 10px 15px 0 rgb(0 0 0 / 10%)',
   },
   todaySchedule:{
-    height:'420px',
+    minHeight:'444px'
   },
+  events:{
+    paddingTop:"20px",
+    "& h5":{
+      fontWeight:700,
+      textAlign:"center",
+      color:"#070764",
+
+    },
+  },
+  eventBTN:{
+    display:"flex",
+    justifyContent:"center",
+    fontWeight:700,
+    color:"#007eff",
+    border:"2px solid #e9e3e3de",
+    padding:"5px",
+    borderRadius:"5px",
+    "&:hover":{
+      cursor:"pointer"
+    }
+  }
 
 }));
 const Dashboard = () => {
   const classes=useStyles();
+  const [eventsClick,setEventsClick]=useState(false);
+  const [events,setEvents]=useState();
+  const [user,,,,]=useContext(contextUser);
+
+  useEffect(()=>{
+    fetch(`http://localhost:5000/getEvent`)
+    .then(res=>res.json())
+    .then(data=>{
+        if(data){
+          setEvents(data);
+        }
+    })
+    .catch(err=>{console.log(err)})
+  },[])
   return (
     <div className={classes.root}>
       <Grid container spacing={3}>
@@ -149,7 +189,7 @@ const Dashboard = () => {
           </Paper>
         </Grid>
         <Grid item xs={12} lg={9}>
-          <Paper className={classes.paper}>
+          {user.role==="teacher"&&<><Paper className={classes.paper}>
             <h3 style={{marginTop:'0'}}>
               Courses Progress
             </h3>
@@ -158,24 +198,27 @@ const Dashboard = () => {
               <ProgressBar value={45}></ProgressBar>
               <ProgressBar value={33}></ProgressBar>
             </Grid>
-           
-          </Paper> <br />
+          </Paper><br/></>}
           <Paper className={classes.paper}>
-            <h3 style={{marginTop:'0'}}>
-              Courses Progress
-            </h3>
-            <Grid container spacing={2}>
-              <ProgressBar value={63}></ProgressBar>
-              <ProgressBar value={45}></ProgressBar>
-              <ProgressBar value={33}></ProgressBar>
-            </Grid>
-           
+            <CiuCalendar></CiuCalendar>
           </Paper>
         </Grid>
         <Grid item lg={3} xs={12}>
           <Paper className={classes.paper,classes.todaySchedule}>
-            
+            <div className={classes.events}>
+              <h5>Events</h5>
+            </div>
+            <hr></hr>
+            <div style={{height:"330px",overflowY:"auto"}}>
+              {eventsClick && <CreateEvent eventClick={setEventsClick}/>}
+              {events && events.map(data=> <Events data={data}></Events>)}
+            </div>
+            <div className={classes.eventBTN} onClick={()=>{setEventsClick(true)}}>
+              <AddIcon></AddIcon>
+              <h6>Create Event</h6>
+            </div>
           </Paper>
+          
         </Grid>
       </Grid>
   </div>

@@ -1,5 +1,5 @@
 import { Button, Grid ,makeStyles} from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import login from '../../image/login.jpg'
 import ciuLogo from '../../image/ciuLogo.png';
 import { useForm } from "react-hook-form";
@@ -9,11 +9,17 @@ import {AiFillLock} from 'react-icons/ai';
 import {MdAssignmentTurnedIn} from 'react-icons/md';
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import firebase from "firebase/app";
+import clsx from 'clsx';
 
 import {
-    Link
+    Link, useHistory
   } from "react-router-dom";
 import firebaseConfig from '../firebase.config';
+import { contextUser } from '../../App';
+import swal from 'sweetalert2';
+import { LinearProgress } from '@mui/material';
+import { Timer10 } from '@material-ui/icons';
 
 const useStyles=makeStyles(theme=>({
     cardLogIn:{
@@ -75,9 +81,10 @@ const useStyles=makeStyles(theme=>({
         display:"flex",
         justifyContent:"center",
         alignItems:"center",
-    }
-    
-
+    },
+    hideComponent:{
+        display:"none"
+    },
 }));
 
 const app = initializeApp(firebaseConfig);
@@ -85,8 +92,16 @@ const app = initializeApp(firebaseConfig);
 const Login = () => {
     const classes=useStyles();
     const [createAccount,setCreateAccount]=useState(false);
+    const history = useHistory();
 
     const { register, handleSubmit, formState: { errors } } = useForm();
+    const [,setUser,,]=useContext(contextUser);
+
+    const [confirmationSms,setConfirmationSms]=useState({sms:"",color:""});
+    const [progress,setProgress]=useState(0);
+    const [show,setShow]=useState(true);
+    let timer;
+    
     const onSubmit = data => {
         console.log(data);
         if(createAccount===true){
@@ -102,11 +117,19 @@ const Login = () => {
                     const user = userCredential.user;
                     // ...
                     console.log("USER CREATED");
+                    setConfirmationSms({sms:"User Created Successfully",color:"green"});
                 })
                 .catch((error) => {
                     const errorCode = error.code;
                     const errorMessage = error.message;
                     console.log(errorMessage);
+
+                    swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Something went wrong!',
+                        footer: '<a href="">Why do I have this issue?</a>'
+                      })
                     // ..
                 });
 
@@ -115,19 +138,43 @@ const Login = () => {
             
         }
         else{
-            console.log("log in ");
+            setShow(false)
             const {email,password}=data;
             console.log(email,password);
             const auth = getAuth();
             signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 // Signed in 
-                const user = userCredential.user;
-                // ...
+                const user = userCredential.user; 
+
+                fetch(`http://localhost:5000/userById/${email}`)
+                .then(res=>res.json())
+                .then(data=>{
+                    if(data[0]){
+                        setUser(data[0]);
+                        saveUsertoStorage({email:data[0]._id,role:data[0].role,name:data[0].name});
+                        setShow(false)
+                        history.push('/');
+                    }
+                })   
+
+                
             })
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
+                console.log(errorMessage);
+                swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                    confirmButtonText: 'Error Issue'
+                  }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                      swal.fire(errorMessage)
+                    } 
+                  })
             });
         }
         function ValidateEmail(mail) 
@@ -138,10 +185,27 @@ const Login = () => {
             }
                 alert("You have entered an invalid email address!")
                 return (false)
-            }
+        }
+        const saveUsertoStorage=(userDetails)=>{
+            sessionStorage.setItem('user',JSON.stringify(userDetails)); 
+        }
     }
 
+    useEffect(() => {
+        timer = setInterval(() => {
+          setProgress((prevProgress) => (prevProgress >= 100 ? 10 : prevProgress + 6));
+        }, 800);
+        return () => { 
+          clearInterval(timer);
+        };
+      }, []); 
+
     return (
+        <section>
+            <div className={clsx({[classes.hideComponent]:show})}>
+                <LinearProgress variant="determinate" value={progress} style={{width:"100%"}}></LinearProgress>
+            </div>
+
         <div className="d-flex align-items-center" style={{height:"100vh"}}>
             <Grid container>
                 <Grid item className="d-flex align-items-center justify-content-center" xs={12} lg={5}>
@@ -188,7 +252,7 @@ const Login = () => {
                                     </div>
                                     {createAccount && 
                                     <div className={classes.inputGroup}>
-                                        <div className={"d-flex",classes.inputField}>
+                                        <div style={{display:"flex"}} className={classes.inputField}>
                                             <input type="password"  placeholder=" Confirm Password" {...register("confirmPass", { required: true })} />
                                             {/* errors will return when field validation fails  */}
                                             {errors.confirmPass && <span>This field is required</span>}
@@ -202,11 +266,10 @@ const Login = () => {
                                         Submit
                                     </Button>
                                    {!createAccount && <p><br /> Do not have account?<Link onClick={()=>{setCreateAccount(true)}}>Create Account</Link></p>}
-                                   {createAccount && <p>Already have account?<Link onClick={()=>{setCreateAccount(false)}}>Log In</Link></p>}
+                                   {createAccount && <p>Already have account?<Link onClick={()=>{setCreateAccount(false);}}>Log In</Link></p>}
+                                   
                                     </form>
                                 </div>
-                                
-
                         </div>
                     
                 </Grid>
@@ -218,7 +281,7 @@ const Login = () => {
                 </Grid>
 
             </Grid>     
-        </div>
+        </div></section>
         
            
         

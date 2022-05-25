@@ -1,26 +1,59 @@
-import * as React from 'react';
-import TextField from '@mui/material/TextField';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import DesktopDatePicker from '@mui/lab/DesktopDatePicker';
+import { Grid, makeStyles } from '@material-ui/core';
+import React, { PureComponent } from 'react';
+import { BiXCircle } from "react-icons/bi";
 
-export default function MaterialUIPickers() {
-  const [value, setValue] = React.useState(new Date('2014-08-18T21:11:54'));
-
-  const handleChange = (newValue) => {
-    setValue(newValue);
-  };
-
-  return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <DesktopDatePicker
-          label="Date desktop"
-          inputFormat="MM/dd/yyyy"
-          value={value}
-          onChange={handleChange}
-          renderInput={(params) => <TextField {...params} />}
-        />
+const fakeData={id:"17202155",eligibleSubjects:['cse101','cse115','cse235'],credits:20};
+const useStyle=makeStyles(theme=>({
+  root:{},
+  eligibleCourses:{
+    padding:'5px',
+    backgroundColor:"white",
+    borderRadius:"7px",
+    margin:"5px"
+  },
+  dltIcon:{
+    '&:hover':{
+      color:"red",
+      cursor:'pointer',
       
-    </LocalizationProvider>
-  );
+    }
+  }
+}))
+
+const Extra=()=> {
+  const classes=useStyle();
+
+    return (
+      <div>
+        <div>
+          <Grid container>
+            <Grid item lg={3}>
+              <h5>Students Id</h5>
+            </Grid>
+            <Grid item lg={5}>
+              <h5>Eligible courses for particular student</h5>
+            </Grid>
+            <Grid item lg={2}>
+              <h5>total credits</h5>
+            </Grid>
+          </Grid>
+        </div>
+        <div>
+          <Grid container>
+            <Grid item lg={3}>
+              <h5>{fakeData.id}</h5>
+            </Grid>
+            <Grid item lg={5}>
+              <div>
+                {fakeData.eligibleSubjects.map(crs=><span className={classes.eligibleCourses}>{crs}<span className={classes.dltIcon}><BiXCircle/></span></span>)}
+              </div>
+            </Grid>
+            <Grid item lg={2}>
+              <h5>{fakeData.credits}</h5>
+            </Grid>
+          </Grid>
+        </div>
+      </div>
+    )
 }
+export default Extra;

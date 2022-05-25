@@ -9,12 +9,22 @@ import {
   } from "react-router-dom";
 import Header from '../../Header/Header';
 import Dashboard from '../DashBoard/Dashboard';
-import AddStudent from '../StudentSection/AddStudent';
-import AllStudent from '../StudentSection/AllStudent';
-import Practise from '../../Practise';
-import AddTeachers from '../TeacherSection/AddTeachers';
-import AllTeachers from '../TeacherSection/AllTeachers';
-import OfferList from '../../OfferList/OfferList';
+import AddStudent from '../../StudentSection/AddStudent';
+import AllStudent from '../../StudentSection/AllStudent';
+import AllTeachers from '../../TeacherSection/AllTeachers';
+import AddOfferList from '../../OfferList/AddOfferList';
+import AddCourse from '../../CourseSection/AddCourse';
+import AllCourses from '../../CourseSection/AllCourses';
+import AddUser from '../../User/AddUser';
+import AllUsers from '../../User/AllUsers';
+import Result from '../../Result/Result';
+import OfferlistBoard from '../../OfferList/OfferlistBoard';
+import Extra from '../../Extra';
+import StudentProfile from '../../StudentSection/StudentProfile';
+import SearchStudent from '../../StudentSection/SearchStudent';
+import RoutineBoard from '../../Routine/Routine/RoutineBoard';
+import ManageRoutineExternal from '../../Routine/ManageRoutineExternal/ManageRoutineExternal';
+
 
 
 export const contextAdmin=createContext();
@@ -64,10 +74,36 @@ const Admin = () => {
                         <Route path="/addTeachers">
                             <AddStudent></AddStudent>
                         </Route>
-                        <Route path="/offerlist">
-                            <OfferList></OfferList>
+                        <Route path="/addAdbisingList">
+                            <AddOfferList></AddOfferList>
                         </Route>
-                        
+                        <Route path="/getOfferlist">
+                            <OfferlistBoard></OfferlistBoard>
+                        </Route>
+                        <Route path="/addCourses">
+                            <AddCourse></AddCourse>
+                        </Route>
+                        <Route path="/allCourses">
+                            <AllCourses></AllCourses>
+                        </Route>
+                        <Route path="/addUser">
+                            <AddUser></AddUser>
+                        </Route>
+                        <Route path="/allUsers">
+                            <AllUsers></AllUsers>
+                        </Route>
+                        <Route path="/routine">
+                            <RoutineBoard></RoutineBoard>
+                        </Route>
+                        <Route path="/manageRoutineExternals">
+                            <ManageRoutineExternal></ManageRoutineExternal>
+                        </Route>
+                        <Route path="/result">
+                            {/* <Result></Result> */}
+                            {/* <OfferlistBoard></OfferlistBoard> */}
+                            {/* <Extra></Extra> */}
+                            <SearchStudent></SearchStudent>
+                        </Route>
                     </Switch>
                 </div>
             </Router>
