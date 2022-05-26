@@ -101,8 +101,8 @@ const Admin = () => {
                         <Route path="/result">
                             {/* <Result></Result> */}
                             {/* <OfferlistBoard></OfferlistBoard> */}
-                            {/* <Extra></Extra> */}
-                            <SearchStudent></SearchStudent>
+                            <Extra></Extra>
+                            {/* <SearchStudent></SearchStudent> */}
                         </Route>
                     </Switch>
                 </div>

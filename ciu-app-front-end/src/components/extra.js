@@ -1,6 +1,7 @@
 import { Grid, makeStyles } from '@material-ui/core';
 import React, { PureComponent } from 'react';
 import { BiXCircle } from "react-icons/bi";
+import Slot from './Routine/Routine/Slot';
 
 const fakeData={id:"17202155",eligibleSubjects:['cse101','cse115','cse235'],credits:20};
 const useStyle=makeStyles(theme=>({
@@ -22,20 +23,12 @@ const useStyle=makeStyles(theme=>({
 
 const Extra=()=> {
   const classes=useStyle();
+  const x=[1,2,3,4,5]
 
     return (
       <div>
         <div>
           <Grid container>
-            <Grid item lg={3}>
-              <h5>Students Id</h5>
-            </Grid>
-            <Grid item lg={5}>
-              <h5>Eligible courses for particular student</h5>
-            </Grid>
-            <Grid item lg={2}>
-              <h5>total credits</h5>
-            </Grid>
           </Grid>
         </div>
         <div>

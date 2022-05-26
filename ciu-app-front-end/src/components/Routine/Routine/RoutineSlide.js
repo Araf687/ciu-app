@@ -9,32 +9,38 @@ const useStyles=makeStyles(theme=>({
       backgroundColor:'white',
       margin:'10px'
   },
-
-  slot:{
-      border:'2px solid lightgrey',
-      width:'100%',
-      height:'30px'
-  }
   }));
 
 function RoutineSlide(props) {
-  const [roomData,setRoomData]=useState([]);
+  const [routineData,setRoutineData]=useState([]);
   const dataFor=props.day[0]==='S'?'slotsForST':props.day[0]==='M'?'slotsForMW':'slotsForTH';
   const classes=useStyles();
   useEffect(()=>{
     fetch("http://localhost:5000/getAllClassRooms")
         .then(res=>res.json())
         .then(data=>{
-            console.log(data);
-            setRoomData(data);
+            // console.log(data);
+            setRoutineData(data);
         })
   },[])
+  const changeRoutineData=(data,roomId,slot)=>{
+    // console.log(data,roomId,slot,dataFor);
+    const newData=routineData.map(rData=>{
+      if(rData._id===roomId)
+      {
+        rData[dataFor][slot]=data;
+      }
+      return rData;
+    })
+    setRoutineData(newData);
+  }
     
   return (
     <div>
       <p style={{textAlign:'center',fontWeight:600}}>{props.day}</p>
       <SlideRow heading={true} data={null}></SlideRow>
-      {roomData && roomData.map(data=><SlideRow 
+      {routineData && routineData.map(data=><SlideRow 
+                      changeRoutineData={changeRoutineData}
                       dataFor={dataFor}
                       heading={false} 
                       data={data}></SlideRow>)}

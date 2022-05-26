@@ -14,11 +14,9 @@ const useStyles=makeStyles((theme)=>({
 function OfferedCourse(props) {
     const classes=useStyles();
     const courses=props.courses;
-    useEffect(()=>{
-    },[])
   return (
     <Grid container className={classes.root}>
-        {courses && courses.map(data=><ParticularCourse id={data._id}></ParticularCourse>)}
+        {courses && courses.map(data=><ParticularCourse id={data}></ParticularCourse>)}
     </Grid>
   )
 }

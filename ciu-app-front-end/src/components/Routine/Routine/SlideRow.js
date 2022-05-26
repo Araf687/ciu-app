@@ -9,16 +9,18 @@ const useStyles=makeStyles(theme=>({
         textAlign:'center',
         backgroundColor:'white',
         margin:'10px 0px',
-        borderRadius:'5px'
+        borderRadius:'5px',
     },
     headingSlot:{
         width:'100%',
-        height:'30px'
+        height:'auto',
+        padding:'5px 0px'
     },
     slot:{
         border:"2px solid lightgrey",
         width:'100%',
-        height:'auto'
+        height:'40px',
+        
 
     },
     disable:{
@@ -29,9 +31,16 @@ const useStyles=makeStyles(theme=>({
 
 function SlideRow(props) {
     const classes=useStyles();
+    const allSlots=['8:00 am','9:30 am','11:00 am','12:30 pm','2:00 pm','3:30 pm']
     const [rowData,setRowData]=useState(props.data);
     const dataForWhichDay=props.dataFor;    
-    !props.heading&&console.log(rowData[dataForWhichDay]['3:30 pm']);
+
+    const dataDropped=(data,slot)=>{
+        props.changeRoutineData(data,props.data._id,slot)
+        const newData=rowData;
+        newData[dataForWhichDay][slot]=data;
+        setRowData(newData);
+    }
     
   return (
     <Grid container className={classes.root}>
@@ -65,24 +74,12 @@ function SlideRow(props) {
             <Grid item xs={12} lg={1.2} >
                 <p style={{fontWeight:600}}>{props.data._id}</p>
             </Grid>
-            <Grid item className={clsx(classes.slot, rowData[dataForWhichDay]['8:00 am']===false&&[classes.disable])} xs={12} lg={1.8}>
-
-            </Grid>
-            <Grid item xs={12} lg={1.8} className={clsx(classes.slot, rowData[dataForWhichDay]['9:30 am']===false&&[classes.disable] )}>
-
-            </Grid>
-            <Grid item xs={12} lg={1.8} className={clsx(classes.slot, rowData[dataForWhichDay]['11:00 am']===false&&[classes.disable] )}>
-
-            </Grid>
-            <Grid item xs={12} lg={1.8} className={clsx(classes.slot, rowData[dataForWhichDay]['12:30 pm']===false&&[classes.disable] )}>
-
-            </Grid>
-            <Grid item xs={12} lg={1.8} className={clsx(classes.slot, rowData[dataForWhichDay]['2:00 pm']===false&&[classes.disable] )}>
-
-            </Grid>
-            <Grid item xs={12} lg={1.8} className={clsx(classes.slot, rowData[dataForWhichDay]['3:30 pm']===false&&[classes.disable])}>
-
-            </Grid>
+            {rowData&&allSlots.map(slot=><Grid
+                    className={clsx(classes.slot, rowData[dataForWhichDay][slot]===false&&[classes.disable])} 
+                    xs={12} lg={1.8}
+            >
+                <Slot dataDropped={dataDropped} slot={slot} slotData={rowData[dataForWhichDay][slot]}></Slot>
+            </Grid>)}
         </>}
     </Grid>
   )
