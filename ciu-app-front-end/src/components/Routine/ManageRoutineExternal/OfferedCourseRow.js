@@ -27,7 +27,7 @@ const useStyles=makeStyles(theme=>({
 
 function OfferedCourseRow(props) {
   const data=props.data;
-  console.log(data.faculty);
+  // console.log(props.allFaculties);
   const {eligibleStudents}=data;
   const {ignoredStudent}=data;
   const batchData=getBatchFromStudentsId(eligibleStudents);
@@ -101,8 +101,8 @@ function OfferedCourseRow(props) {
               autoWidth={true}
               inputProps={{ readOnly: props.changeFaculty}}
             >
-              <MenuItem value={"TBA"}>TBA</MenuItem>
-              {allFaculties&&allFaculties.map(faculty=><MenuItem inputProps={{style: {fontSize: '10px'}}} value={faculty.name||(faculty.firstName+faculty.lastName)}><small>{faculty.name||(faculty.firstName+faculty.lastName)}</small></MenuItem>)}
+              <MenuItem value={faculty}><small>{faculty}</small></MenuItem>
+              {allFaculties&&allFaculties.map(faculty=><MenuItem value={faculty.name||(faculty.firstName+faculty.lastName)}><small>{faculty.name||(faculty.firstName+faculty.lastName)}</small></MenuItem>)}
             </Select>
           </FormControl>
         </Grid>

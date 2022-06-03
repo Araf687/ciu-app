@@ -1,9 +1,9 @@
 import {makeStyles } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import clsx from 'clsx';
-import { NoEncryption } from '@material-ui/icons';
 import { useDrop } from 'react-dnd';
 import Data from './Data';
+import { routineContext } from './RoutineBoard';
 const useStyles=makeStyles(theme=>({
     slot:{
         border:"2px solid lightgrey",
@@ -26,23 +26,24 @@ const useStyles=makeStyles(theme=>({
     }));
 function Slot(props) {
   const classes=useStyles();
-  const [slotData,setSlotData]=useState(props.slotData);
-  const [dragData,setDragData]=useState();
-  const [isDataDropped,setIsDataDropped]=useState(typeof(slotData)==='object')
-
+  const [option]=useContext(routineContext);
+  // console.log('option',option);
+  const [isDataDropped,setIsDataDropped]=useState(typeof(props.slotData)==='object')
   const [{isOver},drop]=useDrop(()=>({
     accept:"courseData",
     drop: (item)=>dropData(item.data),
   }));
-
   const dropData=(data)=>{
     props.dataDropped(data,props.slot)
-    setSlotData(data._id);
-    setIsDataDropped(true);
+    setIsDataDropped(true);  
   }
   return (
-    <div ref={drop} className={clsx( {[classes.course]:isDataDropped})}>
-      <Data data={props.slotData}></Data>
+    <div ref={drop} style={{height:'36px'}} 
+      className={clsx( {[classes.course]:isDataDropped&&typeof(props.slotData)!=="boolean"})}
+    >
+      {typeof(props.slotData) !== "boolean"&&
+        <Data data={props.slotData} ></Data>
+      }
     </div>
   )
 }

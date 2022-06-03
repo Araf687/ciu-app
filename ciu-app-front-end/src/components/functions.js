@@ -4,6 +4,7 @@ const getCurrentSemester=()=>{
         var year = dateObj.getUTCFullYear();
         let currentSemester="";
         let nextSemester="";
+        
         if(month>=1&&month<=4){
             currentSemester="Spring"; 
         }
@@ -14,7 +15,8 @@ const getCurrentSemester=()=>{
             currentSemester="Autumn";
             
         }
-        return currentSemester+year.toString().substring(2, 4);
+        // return currentSemester+year.toString().substring(2, 4);
+        return 'Spring22';
 }
 const getNextSemester=()=>{
     var dateObj = new Date();
@@ -51,9 +53,10 @@ const advisingArray_to_RoutineArray=(array)=>{
         data.roomNo='';
         data.timeSlot='';
         data.dayFor='';
-        console.log(data);
+        // console.log(data);
         return data;
     })
+    console.log(newArray)
     return newArray;
 
 }
@@ -67,4 +70,89 @@ const getDayMonthYear=(date)=>{
 const getRoutineObject=(roomArray,routineExternalObject)=>{
 
 }
-export {getCurrentSemester,getNextSemester,getBatchFromStudentsId,advisingArray_to_RoutineArray,getDayMonthYear};
+const getClashCheckingObject=()=>{
+    const object={
+        ST:{
+            "8:00 am":{},
+            "9:30 am":{},
+            "11:00 am":{},
+            "12:30 pm":{},
+            "2:00 pm":{},
+            "3:30 pm":{},
+        },
+        MW:{
+            "8:00 am":{},
+            "9:30 am":{},
+            "11:00 am":{},
+            "12:30 pm":{},
+            "2:00 pm":{},
+            "3:30 pm":{},
+        },
+        TH:{
+            "8:00 am":{},
+            "9:30 am":{},
+            "11:00 am":{},
+            "12:30 pm":{},
+            "2:00 pm":{},
+            "3:30 pm":{},
+        }
+        
+    }
+    return object;
+}
+const getClashedDataObj=()=>{
+    const object={
+        ST:{
+            "8:00 am":{},
+            "9:30 am":{},
+            "11:00 am":{},
+            "12:30 pm":{},
+            "2:00 pm":{},
+            "3:30 pm":{},
+        },
+        MW:{
+            "8:00 am":{},
+            "9:30 am":{},
+            "11:00 am":{},
+            "12:30 pm":{},
+            "2:00 pm":{},
+            "3:30 pm":{},
+        },
+        TH:{
+            "8:00 am":{},
+            "9:30 am":{},
+            "11:00 am":{},
+            "12:30 pm":{},
+            "2:00 pm":{},
+            "3:30 pm":{},
+        }
+        
+    }
+}
+export {getCurrentSemester,getNextSemester,getBatchFromStudentsId,advisingArray_to_RoutineArray,getDayMonthYear,getClashCheckingObject};
+
+
+
+
+
+
+// if(type==='sameSlot'){
+//     //it gives unique values after merging the array
+//     let mergeArray=[...new Set([...eligible,...eligible2])];
+//     mergeArray.map(stId=>{
+//       //check if a particular id seted two data in the same slot
+//       if(tempObj[stId].length==1){
+//         //delete the the key from the object
+//         console.log('dlete done');
+//         delete tempObj[stId];
+//       }
+//       else{
+//         //delete the course id from the key array of clashChecking object
+//         const indexOfCourse=tempObj[stId].indexOf(_id);
+//         tempObj[stId].splice(indexOfCourse, 1);
+//       }
+//     })
+//     newClashObj=clashChekingObj;
+//     newClashObj[day][timeSlot]=tempObj;
+
+//   }

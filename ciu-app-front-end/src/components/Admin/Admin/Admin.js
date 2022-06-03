@@ -24,7 +24,8 @@ import StudentProfile from '../../StudentSection/StudentProfile';
 import SearchStudent from '../../StudentSection/SearchStudent';
 import RoutineBoard from '../../Routine/Routine/RoutineBoard';
 import ManageRoutineExternal from '../../Routine/ManageRoutineExternal/ManageRoutineExternal';
-
+import {DndProvider} from 'react-dnd';
+import {HTML5Backend} from 'react-dnd-html5-backend';
 
 
 export const contextAdmin=createContext();
@@ -101,7 +102,10 @@ const Admin = () => {
                         <Route path="/result">
                             {/* <Result></Result> */}
                             {/* <OfferlistBoard></OfferlistBoard> */}
-                            <Extra></Extra>
+                            <DndProvider backend={HTML5Backend}>
+                               <Extra></Extra>
+                            </DndProvider>
+                            
                             {/* <SearchStudent></SearchStudent> */}
                         </Route>
                     </Switch>

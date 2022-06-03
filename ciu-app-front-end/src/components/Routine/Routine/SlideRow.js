@@ -30,6 +30,7 @@ const useStyles=makeStyles(theme=>({
     }));
 
 function SlideRow(props) {
+    // console.log('slideRow');
     const classes=useStyles();
     const allSlots=['8:00 am','9:30 am','11:00 am','12:30 pm','2:00 pm','3:30 pm']
     const [rowData,setRowData]=useState(props.data);
@@ -37,9 +38,6 @@ function SlideRow(props) {
 
     const dataDropped=(data,slot)=>{
         props.changeRoutineData(data,props.data._id,slot)
-        const newData=rowData;
-        newData[dataForWhichDay][slot]=data;
-        setRowData(newData);
     }
     
   return (
@@ -74,11 +72,13 @@ function SlideRow(props) {
             <Grid item xs={12} lg={1.2} >
                 <p style={{fontWeight:600}}>{props.data._id}</p>
             </Grid>
-            {rowData&&allSlots.map(slot=><Grid
+            {rowData&&allSlots.map(slot=><Grid 
                     className={clsx(classes.slot, rowData[dataForWhichDay][slot]===false&&[classes.disable])} 
                     xs={12} lg={1.8}
-            >
-                <Slot dataDropped={dataDropped} slot={slot} slotData={rowData[dataForWhichDay][slot]}></Slot>
+                >
+                <Slot dataDropped={dataDropped} 
+                slot={slot}
+                slotData={rowData[dataForWhichDay][slot]}></Slot>
             </Grid>)}
         </>}
     </Grid>

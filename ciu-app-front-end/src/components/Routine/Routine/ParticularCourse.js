@@ -15,6 +15,8 @@ const useStyles= makeStyles((theme)=>({
 
 function ParticularCourse(props) {
   const classes=useStyles();
+  const courseId=props.id._id;
+
   const [{isDragging},drag]=useDrag(()=>({
     type:"courseData",
     item:{data:props.id},
@@ -23,9 +25,15 @@ function ParticularCourse(props) {
     }),
   }))
   return (
-    <div ref={drag} className={classes.root} style={{backgroundColor:isDragging?'salmon':'#0769a3eb'}}>
-        <span style={{fontWeight:600,fontSize:'14px'}}>{props.id._id}</span>
-    </div>
+    <>
+      {courseId[courseId.length-1]!==' '?<div ref={drag} className={classes.root} style={{backgroundColor:isDragging?'salmon':'#0769a3eb'}}>
+          <span style={{fontWeight:600,fontSize:'14px'}}>{courseId}</span>
+      </div>:
+      <div className={classes.root} style={{backgroundColor:'#05a505'}}>
+          <span style={{fontWeight:600,fontSize:'14px'}}>{courseId}</span>
+      </div>
+      }
+    </>
   )
 }
 

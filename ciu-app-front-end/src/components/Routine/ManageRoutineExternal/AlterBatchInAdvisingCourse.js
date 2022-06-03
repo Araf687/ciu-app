@@ -36,7 +36,7 @@ const useStyles=makeStyles(theme=>({
 
 function AlterBatchInAdvisingCourse() {
   const [showDeleteBtn,setShowDeleteBtn]=useState(false);
-  const [typeOfFetchedData,setTypeOfFetchedData]=useState('');
+  const [externalData,setExternalData]=useState([]);
   const [allFaculties,setAllFaculties]=useState([]);
   const [changeFaculty,setChangeFaculty]=useState(true);
   const classes=useStyles();
@@ -57,7 +57,7 @@ function AlterBatchInAdvisingCourse() {
     console.log(routineData);
     fetch(`http://localhost:5000/confirmAdvisedCourseExternal/${nextSemester}`,{
       method:'POST',
-      body:JSON.stringify({_id:nextSemester,routine:routineData}),
+      body:JSON.stringify({_id:externalData._id,customiseList:routineData,removalCourses:externalData.removalCourses}),
       headers:{
         "Content-Type":"application/json"
       }
@@ -66,18 +66,29 @@ function AlterBatchInAdvisingCourse() {
     .then(data=>{
       setChangeFaculty(true);
       setShowDeleteBtn(false);
+      if(data===true){
         swal.fire(
-        'Great!',
-        'Externals Added Successfully',
-        'success'
-        )})
-        .catch(err=>{
-           swal.fire({
-           icon: 'error',
-           title: 'Oops...',
-           text:err,
+          'Great!',
+          'Externals Added Successfully',
+          'success'
+        )  
+      }
+      else{
+        swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text:data,
           })
-        })
+
+      }
+    })
+    .catch(err=>{
+      swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text:err,
+      })
+    })
   }
   const clickCancel=()=>{
     setShowDeleteBtn(false);
@@ -95,7 +106,6 @@ function AlterBatchInAdvisingCourse() {
 
   }
   const setFaculty=(courseId,facultyName)=>{
-    console.log(courseId,facultyName);
     const updateRoutineData=routineData.map(data=>{
       if(data._id._id===courseId){
         data.faculty=facultyName;
@@ -103,15 +113,19 @@ function AlterBatchInAdvisingCourse() {
       return data;
     });
     setRoutineData(updateRoutineData);
-    console.log(routineData);
   }
   useEffect(()=>{
     console.log(nextSemester);
     fetch(`http://localhost:5000/getDataForAlterBatch/${nextSemester}`)
       .then(response => response.json())
       .then(data => {
-        console.log(advisingArray_to_RoutineArray(data.data[0].customiseList));
-        setRoutineData(advisingArray_to_RoutineArray(data.data[0].customiseList));
+        if(data.data.length>0&&data.data[0].customiseList[0].hasOwnProperty('faculty')){
+          setRoutineData(data.data[0].customiseList);
+        }
+        else{
+          setRoutineData(advisingArray_to_RoutineArray(data.data[0].customiseList));
+        }
+        setExternalData(data.data[0]);
     })
   },[])
   return (

@@ -179,7 +179,7 @@ const AllStudent = () => {
         
     }
     const clickEdit=(data)=>{
-
+        
     }
     useEffect(() => {
         fetch("http://localhost:5000/allStudents")

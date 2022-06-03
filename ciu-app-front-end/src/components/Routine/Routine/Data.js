@@ -1,20 +1,17 @@
-import React from 'react'
-import { useDrop,useDrag } from 'react-dnd';
+import React from "react";
+import {useDrag } from "react-dnd";
 function Data(props) {
-    console.log(props.data);
-    const [{isDragging},drag]=useDrag(()=>({
-        type:"courseData",
-        item:{data:props.data},
-        collect:(monitor)=>({
-          isDragging:!!monitor.isDragging(),
-        }),
-      }))
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: "courseData",
+    item:()=>{return {data:props.data}},
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  }));
+  // console.log(props.data._id)
   return (
-    <div ref={drag}>
-        {typeof(props.data)==='boolean'?`${props.data}`:props.data._id}
-        
-    </div>
-  )
+    <div ref={drag}>{typeof(props.data) === "boolean" ? '': props.data._id}</div>
+  );
 }
 
-export default Data
+export default Data;
