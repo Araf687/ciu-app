@@ -1,0 +1,40 @@
+.swal-wide{
+    min-width: 600px !important;
+    width:auto !important;
+    max-width: 65% !important;
+}
+#clash-section{
+    /* background-color: ; */
+    padding: 5px 16px;
+}
+.row{
+   background-color: aliceblue;
+    margin-bottom: 10px;
+    padding: 5px 0px;
+    border-radius: 6px;
+}
+#time{
+    display: block;
+    font-weight:700;
+
+}
+.courseSec{
+    float:left;
+    /* background: yellow; */
+    width: 20%;
+    font-size: 15px;
+    font-weight:700;
+    color:rgb(13, 13, 173)
+}
+.courseSec small{
+    font-weight: bold;
+}
+.studentIdSec{
+    /* background: lightskyblue; */
+    width: 80%;
+    font-size: 14px;
+    
+}
+.studentIdSec small{
+    font-weight: 700;
+}

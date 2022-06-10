@@ -1,3 +1,7 @@
+import { Grid } from '@material-ui/core';
+import "../App.css"
+import Swal from 'sweetalert2';
+import './function.css';
 const getCurrentSemester=()=>{
     var dateObj = new Date();
         var month = dateObj.getUTCMonth(); 
@@ -129,7 +133,84 @@ const getClashedDataObj=()=>{
         
     }
 }
-export {getCurrentSemester,getNextSemester,getBatchFromStudentsId,advisingArray_to_RoutineArray,getDayMonthYear,getClashCheckingObject};
+
+
+
+const showCheckingClash=(x)=>{
+    Swal.fire({
+        title: 'Checking the student clashh!',
+        timer: 200,
+        allowOutsideClick:false,
+        timerProgressBar: true,
+        timerProgressBar:'red',
+        didOpen: () => {
+          Swal.showLoading()
+        },
+      }).then((result) => {
+        /* Read more about handling dismissals below */
+        if (result.dismiss === Swal.DismissReason.timer) {
+            return true;
+        }
+      })
+}
+const showClashInfo=(y,day,timeSlot)=>{
+   console.log(y)
+   day=day==="ST"?"Saturday / Tuesday ":day=="MW"?"Monday / Wednesday":'Thursday';
+   const st_id=Object.keys(y);
+   let clashInfo={}
+   st_id.map(id=>{
+       if(y[id].length>1){
+           const dataString=y[id].toString();
+           if(dataString in clashInfo){
+            clashInfo[dataString]=[...clashInfo[dataString],id]
+           }
+           else{
+               clashInfo[dataString]=[id]
+           }
+       }
+   })
+    Swal.fire({
+        html:`<div id='clash-section'>
+            <div>
+                <p>${day}<small id='time'>time-slot: ${timeSlot}</small></p>
+            </div>
+            </div>`,
+        customClass: 'swal-wide',
+        didOpen: () => {
+            let clashes=Object.keys(clashInfo);
+            const mainDiv=document.getElementById('clash-section');
+            
+            clashes.length!==0?clashes.map(data=>{
+                let row,courseSec,studentIdSec;
+                row=document.createElement('div');
+                courseSec=document.createElement('div');
+                studentIdSec=document.createElement('div');;
+                row.classList.add('row');
+                courseSec.classList.add('courseSec');
+                studentIdSec.classList.add('studentIdSec');
+        
+                
+                const particularCourse=document.createElement('small');
+                particularCourse.innerHTML=`${data}`;
+                courseSec.appendChild(particularCourse)
+                clashInfo[data].map(stId=>{
+                    const id=document.createElement('small');
+                    id.innerHTML=` ${stId},`;
+                    studentIdSec.append(id);
+
+                })
+                row.append(courseSec,studentIdSec);
+                mainDiv.appendChild(row);
+              }):mainDiv.append("No clashes held in this slot");
+          },
+
+      })
+
+
+}
+export {getCurrentSemester,getNextSemester,
+    getBatchFromStudentsId,advisingArray_to_RoutineArray,
+    getDayMonthYear,getClashCheckingObject,showCheckingClash,showClashInfo};
 
 
 

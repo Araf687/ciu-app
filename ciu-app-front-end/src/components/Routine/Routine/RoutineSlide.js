@@ -4,10 +4,16 @@ import { routineContext } from './RoutineBoard';
 
  
 function RoutineSlide(props) {
-  const [,clashChekingObj,setClashChekingObj,check,clearClashObj]=useContext(routineContext);
+  let [,check,clearClashObj,updateRoutine,stSlot,mwSlot,thSlot]=useContext(routineContext);
   const func_changeOfferedCourses=props.changeOfferdCourse;
-  const [routineData,setRoutineData]=useState([]);
+  const [routineData,setRoutineData]=useState();
   const dataFor=props.day[0]==='S'?'slotsForST':props.day[0]==='M'?'slotsForMW':'slotsForTH';
+  if(props.confirm===true){
+    if(props.day[0]==='S'){updateRoutine(props.day[0],routineData)}
+    else if(props.day[0]==='M'){updateRoutine(props.day[0],routineData)}
+    else{updateRoutine(props.day[0],routineData);}
+  }
+  
   useEffect(()=>{
     fetch("http://localhost:5000/getAllClassRooms")
         .then(res=>res.json())
@@ -15,9 +21,7 @@ function RoutineSlide(props) {
             setRoutineData(data);
         })
   },[])
-
   const changeRoutineData=(data,roomId,slot)=>{
-    const eligible_st=data.eligible;
     let SlotsPrevData,dataForSet=data,tmpRoutineData=routineData;
 
     const indexOfPrevData=routineData.findIndex(data=>data._id===roomId)
@@ -35,13 +39,17 @@ function RoutineSlide(props) {
          return data;
         })
         setRoutineData(newData);
-        func_changeOfferedCourses('remove',data._id);
-        check(dataForSet,dataFor);
+        func_changeOfferedCourses('remove',data._id);//remove data from course section after draging it
+        check(dataForSet,dataFor);//checking if there is ay clash
+        // updateRoutine(dataFor,newData);
       }
       else{
+
         //when a course draged from a slot to another empty slot
-        clearSlot(dataForSet.roomNo,dataForSet.timeSlot);
-        dataForSet.timeSlot!==SlotsPrevData.timeSlot&&clearClashObj(dataForSet,dataFor,'singleData');
+        clearSlot(dataForSet.roomNo,dataForSet.timeSlot);//clear the slot in which we have to set new data
+        //clear the clash checking object because a subject has drag out from a slot 
+        dataForSet.timeSlot!==slot&&clearClashObj(dataForSet,dataFor,'singleData');
+        
         const newData=tmpRoutineData.map(data=>{
           if(data._id===roomId){
             dataForSet.roomNo=roomId;//setting the new room id 
@@ -51,6 +59,7 @@ function RoutineSlide(props) {
           return data;
         })
         setRoutineData(newData);
+        check(dataForSet,dataFor);//checking if there is ay clash
       }
 
     }
@@ -58,7 +67,8 @@ function RoutineSlide(props) {
       if(dataForSet.roomNo===''){
         // when a course draged from course section to a slot which already filled by the data. 
         clearSlot(SlotsPrevData.roomNo,SlotsPrevData.timeSlot);
-        dataForSet.timeSlot!==SlotsPrevData.timeSlot&&clearClashObj(dataForSet,dataFor,'swipe',SlotsPrevData);
+        clearClashObj(SlotsPrevData,dataFor,'singleData');
+        func_changeOfferedCourses('add',data._id,SlotsPrevData._id);
         const newData=tmpRoutineData.map(data=>{
           if(data._id===roomId){
             dataForSet.roomNo=roomId;
@@ -68,12 +78,16 @@ function RoutineSlide(props) {
           return data;
         })
         setRoutineData(newData);
+        check(dataForSet,dataFor);
       }
       else{
         // when swiping two slots data
         clearSlot(SlotsPrevData.roomNo,SlotsPrevData.timeSlot,dataForSet.roomNo,dataForSet.timeSlot)
         let prevSlotsRoom=dataForSet.roomNo,prevSlotsTimeSlot=dataForSet.timeSlot;
         let newRoutineData;
+        //if slots are not same then the function clearClashObj will called
+        dataForSet.timeSlot!==slot&&clearClashObj(dataForSet,dataFor,'swipe',SlotsPrevData);
+        //swiping in the same row or same room
         if(roomId===prevSlotsRoom){
           newRoutineData=tmpRoutineData.map(data=>{
             if(data._id===roomId){
@@ -90,6 +104,7 @@ function RoutineSlide(props) {
           
         }
         else{
+         
           newRoutineData=tmpRoutineData.map(data=>{
             if(data._id===roomId){
               dataForSet.roomNo=roomId;
@@ -107,6 +122,8 @@ function RoutineSlide(props) {
         }
         
         setRoutineData(newRoutineData);
+        check(dataForSet,dataFor,SlotsPrevData);
+
       }}
     }
  

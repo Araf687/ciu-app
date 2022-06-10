@@ -1,4 +1,14 @@
- /* body{
-    font-family: "Comfortaa",sans-serif ;
-    font-size: 15px;
- } */
+ .row{
+    display: 'flex';
+ }
+ .courseSec{
+    padding: '5px';
+ }
+ .studentIdSec{
+    padding:'5px';
+ }
+ #clash-section{
+    /* width: '600px'; */
+    background-color: "yellow";
+    overflow-y: scroll;
+ }

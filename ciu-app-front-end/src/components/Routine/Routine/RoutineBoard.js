@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core';
 import { Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import Routine from './Routine';
-import {getClashCheckingObject} from '../../functions';
+import {getClashCheckingObject,showClashInfo} from '../../functions';
 const useStyles=makeStyles(theme=>({
   breadcumbs:{
       ['& h2']:{
@@ -35,30 +35,29 @@ export const routineContext=React.createContext();
 
 const RoutineBoard=()=>{
     const classes=useStyles();
+    let [udatedRoutineData,setUpdatedRoutineData]=useState([]);
     const [completeStep,setCompleteStep]=useState(true);
     const [createRoutine,setCreateRoutine]=useState(true);
     const [option,setOption]=useState('');
     const [clashChekingObj,setClashChekingObj]=useState(getClashCheckingObject());
-    console.log(clashChekingObj);
-
-
+    let updateRoutine=(day,x)=>{
+      udatedRoutineData[day]=x;
+      console.log(udatedRoutineData)
+    }
     const clickCompleted=()=>{
       setCompleteStep(false);
     }
 
-    const check=(draggedData,day)=>{
-      const {_id,timeSlot,eligible}=draggedData;
-      let arr=[],clashCourses='';
-      const day_routine=day.substring(day.length-2,day.length);
-      console.log(_id,timeSlot,eligible,day_routine);
+    const check=(dragedData1,day,dragedData2)=>{
+      const {_id,timeSlot,eligible}=dragedData1;
 
+      const day_routine=day.substring(day.length-2,day.length);
       let tempObject=clashChekingObj[day_routine][timeSlot];
+      let newClashData=clashChekingObj;
       if(Object.keys(tempObject).length>0){
-        eligible.map(stId=>{
+        eligible.forEach(stId=>{
           if(stId in tempObject){
-            //clash
-            clashCourses=_id+' '+tempObject[stId];
-            arr=[...arr,stId]
+            //clash 
             tempObject[stId]=[...tempObject[stId],_id]
           }
           else{
@@ -67,15 +66,39 @@ const RoutineBoard=()=>{
         })
       }
       else{
-        eligible.map(stId=>{
+        eligible.forEach(stId=>{
           tempObject[stId]=[_id];
         })
       }
-      let newClashData=clashChekingObj;
       newClashData[day_routine][timeSlot]=tempObject;
-      setClashChekingObj(newClashData);
-      console.log(newClashData,clashCourses)
+//the function get two drag data only when we swipe two courses
+      if(dragedData2){
+        const _id2=dragedData2._id,timeSlot2=dragedData2.timeSlot;
+        const eligible2=dragedData2.eligible;
+        let tempObject2=clashChekingObj[day_routine][timeSlot2];
+        if(Object.keys(tempObject2).length>0){
+          eligible2.forEach(stId=>{
+            if(stId in tempObject2){
+              //clash
+              tempObject2[stId]=[...tempObject2[stId],_id2]
+            }
+            else{
+              tempObject2[stId]=[_id2];
+            }
+          })
+        }
+        else{
+          eligible2.forEach(stId=>{
+            tempObject2[stId]=[_id2];
+          })
+        }
+        newClashData[day_routine][timeSlot2]=tempObject2;
 
+      }
+      showClashInfo(tempObject,day_routine,timeSlot)
+      console.log(dragedData1,dragedData2)
+      setClashChekingObj(newClashData,timeSlot);
+      console.log(newClashData);
     }
 
     const clearClashObj=(dragedData1,dataFor,type,dragedData2)=>{
@@ -85,9 +108,10 @@ const RoutineBoard=()=>{
       const tempObj=clashChekingObj[day][timeSlot];
       let newClashObj;
       if(type==='singleData'){
-        eligible.map(stId=>{
+        
+        eligible.forEach(stId=>{
           //check if a particular id seted two data in the same slot
-          if(tempObj[stId].length==1){
+          if(tempObj[stId].length===1){
             //delete the the key from the object
             console.log('dlete done');
             delete tempObj[stId];
@@ -101,13 +125,14 @@ const RoutineBoard=()=>{
         newClashObj=clashChekingObj;
         newClashObj[day][timeSlot]=tempObj;
       }
-      else{
+      else if(type==='swipe'){
         //when swiping in two different Slots
-        const {_id2,timeSlot2,eligible2}=dragedData2;
+        console.log('swipe')
+        const _id2=dragedData2._id,timeSlot2=dragedData2.timeSlot,eligible2=dragedData2.eligible;
         const tempObj2=clashChekingObj[day][timeSlot2];
-        eligible.map(stId=>{
+        eligible.forEach(stId=>{
           //check if a particular id seted two data in the same slot
-          if(tempObj[stId].length==1){
+          if(tempObj[stId].length===1){
             //delete the the key from the object
             console.log('dlete done');
             delete tempObj[stId];
@@ -118,30 +143,43 @@ const RoutineBoard=()=>{
             tempObj[stId].splice(indexOfCourse, 1);
           }
         })
-        eligible2.map(stId=>{
+        eligible2.forEach(stId=>{
           //check if a particular id seted two data in the same slot
-          if(tempObj2[stId].length==1){
+          if(tempObj2[stId].length===1){
             //delete the the key from the object
             console.log('dlete done');
             delete tempObj2[stId];
           }
           else{
             //delete the course id from the key array of clashChecking object
-            const indexOfCourse2=tempObj2[stId].indexOf(_id);
+            const indexOfCourse2=tempObj2[stId].indexOf(_id2);
             tempObj2[stId].splice(indexOfCourse2, 1);
           }
         })
         newClashObj=clashChekingObj;
         newClashObj[day][timeSlot]=tempObj;
         newClashObj[day][timeSlot2]=tempObj2;
+        console.log(newClashObj);
+      }
+      else{
+        console.log('-----------.............--------');
+        console.log(dragedData1,dataFor);
+        console.log(clashChekingObj);
       }
 
     
       setClashChekingObj(newClashObj);
 
     }
+
+    const confirmRoutine=(offeredCourses)=>{
+      console.log(clashChekingObj,offeredCourses);
+      console.log(udatedRoutineData);
+
+    }
+  
     return (
-      <routineContext.Provider value={[option,clashChekingObj,setClashChekingObj,check,clearClashObj]}>
+      <routineContext.Provider value={[option,check,clearClashObj,updateRoutine]}>
         <div className={classes.breadcumbs}>
             <h2>Routine</h2>
             <span><Link to="/dashboard">Dashboard</Link> / Routine</span> 
@@ -172,7 +210,7 @@ const RoutineBoard=()=>{
             >Customize Routine</Button>
             </>}
         </div></>
-        :<Routine option={option}></Routine>}
+        :<Routine confirmRoutine={updateRoutine} option={option}></Routine>}
         
       </routineContext.Provider>
     )
