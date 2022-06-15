@@ -1,25 +1,36 @@
 import SlideRow from './SlideRow';
 import { useContext, useEffect, useState } from 'react';
 import { routineContext } from './RoutineBoard';
+import {getNextSemester} from '../../functions';
 
  
 function RoutineSlide(props) {
-  let [,check,clearClashObj,updateRoutine,stSlot,mwSlot,thSlot]=useContext(routineContext);
+  let [option,check,clearClashObj,updateRoutine]=useContext(routineContext);
   const func_changeOfferedCourses=props.changeOfferdCourse;
   const [routineData,setRoutineData]=useState();
   const dataFor=props.day[0]==='S'?'slotsForST':props.day[0]==='M'?'slotsForMW':'slotsForTH';
-  if(props.confirm===true){
-    if(props.day[0]==='S'){updateRoutine(props.day[0],routineData)}
-    else if(props.day[0]==='M'){updateRoutine(props.day[0],routineData)}
-    else{updateRoutine(props.day[0],routineData);}
-  }
+
   
   useEffect(()=>{
-    fetch("http://localhost:5000/getAllClassRooms")
-        .then(res=>res.json())
-        .then(data=>{
+    if(option==='custom'){
+      fetch(`http://localhost:5000/getRoutine/${getNextSemester()}`)
+      .then(res=>res.json())
+      .then(data=>{
+        if('data' in data){
+          console.log(data.data);
+          setRoutineData(data.data[0].routine);
+        }
+        else{
+          console.log(data.error); 
+        }
+    })}
+    else{
+      fetch("http://localhost:5000/getAllClassRooms")
+      .then(res=>res.json())
+      .then(data=>{
             setRoutineData(data);
-        })
+      })
+    }
   },[])
   const changeRoutineData=(data,roomId,slot)=>{
     let SlotsPrevData,dataForSet=data,tmpRoutineData=routineData;
@@ -61,7 +72,6 @@ function RoutineSlide(props) {
         setRoutineData(newData);
         check(dataForSet,dataFor);//checking if there is ay clash
       }
-
     }
     else{
       if(dataForSet.roomNo===''){
@@ -101,10 +111,10 @@ function RoutineSlide(props) {
             }
             return data;
           })
-          
+          setRoutineData(newRoutineData);
+          check(dataForSet,dataFor,SlotsPrevData);
         }
         else{
-         
           newRoutineData=tmpRoutineData.map(data=>{
             if(data._id===roomId){
               dataForSet.roomNo=roomId;
@@ -118,11 +128,12 @@ function RoutineSlide(props) {
             }
             return data;
           })
+          setRoutineData(newRoutineData);
+          
 
         }
         
-        setRoutineData(newRoutineData);
-        check(dataForSet,dataFor,SlotsPrevData);
+        
 
       }}
     }
@@ -165,9 +176,12 @@ function RoutineSlide(props) {
     setRoutineData(newData);
 
   }
+  if(props.confirm===true){
+    if(props.day[0]==='S'){updateRoutine(dataFor,routineData)}
+    else if(props.day[0]==='M'){updateRoutine(dataFor,routineData)}
+    else{updateRoutine(dataFor,routineData);}
+  }
 
-
-    
   return (
     <div>
       <p style={{textAlign:'center',fontWeight:600}}>{props.day}</p>
@@ -177,6 +191,7 @@ function RoutineSlide(props) {
                       dataFor={dataFor}
                       heading={false} 
                       data={data}></SlideRow>)}
+
     </div>
   )
 }

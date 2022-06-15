@@ -3,44 +3,57 @@ import OfferedCourse from './OfferedCourse';
 import RoutineSlider from './RoutineSlider';
 import {DndProvider} from 'react-dnd';
 import {HTML5Backend} from 'react-dnd-html5-backend';
-import { contextAdmin } from '../../Admin/Admin/Admin';
+import swal from 'sweetalert2';
 import { Button } from '@mui/material';
+import { routineContext } from './RoutineBoard';
 
 
 function Routine(props) {
   let tempOfferedCourses=[];
-  const option=props.option;
-  const [customize,setCustomize]=useState(true);
+  let [option,,,,isCustomize,setIsCustomize]=useContext(routineContext);
+  const [customize,setCustomize]=useState(false);
   const [confirm,setConfirm]=useState(false);
-  console.log(option)
   const [offeredCourses,setOfferedCourses]=useState([]);
+
   useEffect(()=>{
     if(option==='create')
-    {fetch(`http://localhost:5000/getSubjectforRoutine/${option}`)
-    .then(res=>res.json())
-    .then(data=>{
-      if(data.data){
-       setOfferedCourses(data.data.routineSubjects);
-       tempOfferedCourses=data.data.routineSubjects;
-      }
-      else{
-        console.log('error');
-      }
-    })}
-    else{
-      setCustomize(false);
-      fetch(`http://localhost:5000/getRoutine`)
+    {
+      fetch(`http://localhost:5000/getSubjectforRoutine/${option}`)
       .then(res=>res.json())
       .then(data=>{
-        console.log(data)
+        if(data.data){
+        setOfferedCourses(data.data.routineSubjects);
+        tempOfferedCourses=data.data.routineSubjects;
+        }
+        else{
+          console.log('error');
+        }
     })}
+    else{
+      setIsCustomize(false)
+    fetch(`http://localhost:5000/getSubjectforRoutine/${option}`)
+    .then(res=>res.json())
+    .then(data=>{
+      if('error' in data){
+        swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text:data.error,
+        })
+      }
+      else{
+        setOfferedCourses(data.offeredCourse);
+        tempOfferedCourses=data.offeredCourse;
+        props.setClashObj(data.clashInfo)
+      }
+    })
+    }
   
   },[])
   const changeOfferdCourse=(option,courseName1,courseName2)=>{
     if(offeredCourses.length>0){
       tempOfferedCourses=offeredCourses;
     }
-    // console.log(option,courseName,offeredCourses, tempOfferedCourses);
     let newData;
     if(option==='remove'){
       newData=tempOfferedCourses.map(element => {
@@ -67,7 +80,6 @@ function Routine(props) {
         }
         return element;
       });
-      // tempOfferedCourses=newData;
       setOfferedCourses(newData);
     }
     
@@ -77,25 +89,30 @@ function Routine(props) {
   const confirmButtonClick=()=>{
     setConfirm(true);
     props.confirmRoutine('offered_course',offeredCourses);
+    setCustomize(false);
+    setIsCustomize(false)
+  }
+  const clickedCustomizeBtn=()=>{
+    setCustomize(true);
+    setIsCustomize(true)
+    
   }
  
   return (
       <DndProvider backend={HTML5Backend}>
         <OfferedCourse courses={offeredCourses}></OfferedCourse>
-        <RoutineSlider confirm={confirm} customize={customize} changeOfferdCourse={changeOfferdCourse}></RoutineSlider>
-        {option==='custom'&&<div style={{textAlign:'center'}}>
-          <Button variant="contained"onClick={()=>{setCustomize(true);}} size="small">
+        <RoutineSlider c={true} confirm={confirm} changeOfferdCourse={changeOfferdCourse}></RoutineSlider>
+        {option==='custom'&&customize===false?
+        <div style={{textAlign:'center'}}>
+          <Button variant="contained"onClick={()=>{clickedCustomizeBtn()}} size="small">
             Customize
           </Button>
-        </div>}
-        {
-        customize&&<div style={{textAlign:'center'}}>
+        </div>:
+        <div style={{textAlign:'center'}}>
           <Button variant="contained"onClick={()=>{confirmButtonClick()}} size="small">
             confirm Routine
           </Button>
-        </div>
-
-        }
+        </div>}
       </DndProvider> 
 
   )

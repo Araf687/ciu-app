@@ -3,6 +3,7 @@ import React, { useContext, useState } from 'react';
 import clsx from 'clsx';
 import { useDrop } from 'react-dnd';
 import Data from './Data';
+import swal from 'sweetalert2';
 import { routineContext } from './RoutineBoard';
 const useStyles=makeStyles(theme=>({
     slot:{
@@ -26,25 +27,31 @@ const useStyles=makeStyles(theme=>({
     }));
 function Slot(props) {
   const classes=useStyles();
-  const [option]=useContext(routineContext);
-  // console.log('option',option);
+  let [,,,,isCustomize,]=useContext(routineContext);
+
   const [isDataDropped,setIsDataDropped]=useState(typeof(props.slotData)==='object')
   const [{isOver},drop]=useDrop(()=>({
     accept:"courseData",
     drop: (item)=>dropData(item.data),
   }));
   const dropData=(data)=>{
-    props.dataDropped(data,props.slot)
-    setIsDataDropped(true);  
+      props.dataDropped(data,props.slot);
+      setIsDataDropped(true);
   }
   return (
-    <div ref={drop} style={{height:'36px'}} 
+    <>{isCustomize===true?<div ref={drop} style={{height:'36px'}} 
       className={clsx( {[classes.course]:isDataDropped&&typeof(props.slotData)!=="boolean"})}
     >
       {typeof(props.slotData) !== "boolean"&&
         <Data data={props.slotData} ></Data>
       }
-    </div>
+    </div>:<div style={{height:'36px'}} 
+      className={clsx( {[classes.course]:isDataDropped&&typeof(props.slotData)!=="boolean"})}
+    >
+      {typeof(props.slotData) !== "boolean"&&
+        <Data data={props.slotData} ></Data>
+      }
+    </div>}</>
   )
 }
 

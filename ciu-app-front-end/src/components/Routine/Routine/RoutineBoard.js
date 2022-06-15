@@ -4,6 +4,7 @@ import { Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import Routine from './Routine';
 import {getClashCheckingObject,showClashInfo} from '../../functions';
+import swal from 'sweetalert2';
 const useStyles=makeStyles(theme=>({
   breadcumbs:{
       ['& h2']:{
@@ -40,9 +41,27 @@ const RoutineBoard=()=>{
     const [createRoutine,setCreateRoutine]=useState(true);
     const [option,setOption]=useState('');
     const [clashChekingObj,setClashChekingObj]=useState(getClashCheckingObject());
-    let updateRoutine=(day,x)=>{
-      udatedRoutineData[day]=x;
-      console.log(udatedRoutineData)
+    let [isCustomize,setIsCustomize]=useState(true);
+
+    const updateRoutine=(day,dataOfParticularDay)=>{
+      udatedRoutineData[day]=dataOfParticularDay;
+      if(day==='slotsForTH'){
+        const allSlots=['8:00 am','9:30 am','11:00 am','12:30 pm','2:00 pm','3:30 pm']
+        let tempData=udatedRoutineData['slotsForST'];
+        const mwData=udatedRoutineData['slotsForMW'],thData=udatedRoutineData['slotsForTH'];
+        for (let i = 0; i < tempData.length; i++) {
+          allSlots.forEach(element=>{
+            tempData[i]['slotsForMW'][element]=mwData[i]['slotsForMW'][element];
+            tempData[i]['slotsForTH'][element]=thData[i]['slotsForTH'][element];
+          })
+        }
+        const newRoutineData={
+          routine:tempData,
+          clashInfo:clashChekingObj,
+          offeredCourse:udatedRoutineData.offered_course
+        }
+        submitRoutine(newRoutineData);
+      }
     }
     const clickCompleted=()=>{
       setCompleteStep(false);
@@ -166,20 +185,67 @@ const RoutineBoard=()=>{
         console.log(dragedData1,dataFor);
         console.log(clashChekingObj);
       }
-
-    
       setClashChekingObj(newClashObj);
-
     }
 
-    const confirmRoutine=(offeredCourses)=>{
-      console.log(clashChekingObj,offeredCourses);
-      console.log(udatedRoutineData);
-
+    const submitRoutine=(newRoutineData)=>{
+      if(option==='create')
+      {
+        fetch(`http://localhost:5000/submitRoutine/${option}`,{
+          method:'POST',
+          body:JSON.stringify(newRoutineData),
+          headers:{
+              "Content-Type":"application/json"
+          }
+        })
+        .then(res=>res.json())
+        .then(data=>{
+          if(data===true){
+            swal.fire(
+              'Good job!',
+              `Added Routine Successfully`,
+              'success'
+            )
+          }
+          else{
+            swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text:data.error,
+            })
+          }
+        })
+      }
+      else{
+        console.log(option)
+        fetch(`http://localhost:5000/submitRoutine/${option}`,{
+          method:'POST',
+          body:JSON.stringify(newRoutineData),
+          headers:{
+              "Content-Type":"application/json"
+          }
+        })
+        .then(res=>res.json())
+        .then(data=>{
+          if(data===true){
+            swal.fire(
+              'Good job!',
+              `customized Routine Successfully`,
+              'success'
+            )
+          }
+          else{
+            swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text:data.error,
+            })
+          }
+        })
+      }
     }
-  
     return (
-      <routineContext.Provider value={[option,check,clearClashObj,updateRoutine]}>
+      <routineContext.Provider value={[option,check,clearClashObj,updateRoutine,isCustomize,setIsCustomize]}>
         <div className={classes.breadcumbs}>
             <h2>Routine</h2>
             <span><Link to="/dashboard">Dashboard</Link> / Routine</span> 
@@ -210,7 +276,7 @@ const RoutineBoard=()=>{
             >Customize Routine</Button>
             </>}
         </div></>
-        :<Routine confirmRoutine={updateRoutine} option={option}></Routine>}
+        :<Routine setClashObj={setClashChekingObj} confirmRoutine={updateRoutine} option={option}></Routine>}
         
       </routineContext.Provider>
     )
