@@ -14,18 +14,19 @@ const StudentWiseofferedCourse=(props)=> {
     console.log("STUDENT WISE OFFERLIST");
     const studentIds=[];
     data.map(dt=>{
-        dt.eligibleStudents.map(id=>{
+        let eligibleStudent=dt.eligibleStudents||dt.eligible;
+        eligibleStudent.map(id=>{
             studentIds.push(id);
             if(newObject[id]){
-                const newArr=[...newObject[id],dt._id._id];
+                const newArr=[...newObject[id],dt._id._id||dt._id];
                 newObject[id]=newArr;
             }
             else{
-                newObject[id]=[dt._id._id];
+                newObject[id]=[dt._id._id||dt._id];
             }
         })
     })
-    // console.log(newObject,totalCredit);
+    console.log(newObject);
     const [objectkeys,setObjectKeys]=useState(Object.keys(newObject));
     useEffect(()=>{
         if(objectkeys.length){
@@ -64,12 +65,12 @@ const StudentWiseofferedCourse=(props)=> {
                 <Grid item lg={1}>
                 <h6>Students Id</h6>
                 </Grid>
-                <Grid item lg={4}>
+                <Grid item lg={8}>
                 <h6>Eligible courses</h6>
                 </Grid>
-                <Grid item lg={4}>
+                {/* <Grid item lg={4}>
                 <h6>Rest courses</h6>
-                </Grid>
+                </Grid> */}
 
                 <Grid item lg={1}>
                 <h6>total credits</h6>
@@ -84,6 +85,6 @@ const StudentWiseofferedCourse=(props)=> {
         </div>
       </div>
     )
-  
+   
 }
 export default StudentWiseofferedCourse;

@@ -1,69 +1,66 @@
 import React, { useEffect, useState } from 'react';
 import {Avatar, Grid, makeStyles, Paper} from '@material-ui/core';
-import { TextField,InputAdornment, FormControlLabel } from '@mui/material';
-import { IoIosAddCircleOutline } from "react-icons/io";
 import { BiEdit } from "react-icons/bi";
 import Course from '../OfferList/Course';
 import Button from '@material-ui/core/Button';
+import {getCurrentDtate_Time} from '../functions'
 import swal from 'sweetalert2';
-
-
+ 
 const StudentProfile=(props)=>{
-    const data=props.data;
-    console.log(data);
+  const mainData=props.data;
+    const {academicDetails,eligibleForNextSemester,personalDetails}=mainData;
+      
     const [editCompleteCourseSection,seteditCompleteCourseSection]=useState(false);
     const [changeEligibleCourse,setChangeEligibleCourse]=useState(false);
-    
-    const personalDetails=data.personalDetails[0];
-    const [completeCourseDetails,setCompleteCourseDetails]=useState(data.academicDetails[0].completed)
-    const [incompleteCourseDetails,setIncompleteCourseDetails]=useState(data.academicDetails[0].incompleted);
-    const completeCredit=data.academicDetails[0].completeCredit;
-    const [customisedData,setCustomisedData]=useState(data.customisedCourse[0].courses[0]);
-    const [eligibleForCourse,setEligibleForCourse]=useState(data.eligibleForNextSemester);
+
+    const {completed,incompleted,completeCredit}=academicDetails;
+    const advisedCourses=mainData.customisedCourse;
+    console.log("advised courses",advisedCourses);
+    const restEligibleCourse=eligibleForNextSemester.filter(course=>!advisedCourses.includes(course._id._id))
+
+    //states for changing students academic data
     const [editedCourses,setEditedCourses]=useState({addedToCompleted:[],deletedFromCompleted:[]});
     const [customisedEligibleCourse,setCustomisedEligibleCourse]=useState({addCourse:[],removedCourse:[]});
-    // const x=eligibleForCourse.fiter(data=>!customisedData.indexOf());
-    console.log(personalDetails._id,typeof(personalDetails._id))
 
-    // console.log(customisedData,eligibleForCourse);
+    console.log("adv",advisedCourses);
     const handleIncompletedEdit=()=>{
       console.log('incompleted');
       seteditCompleteCourseSection(true);
     }
+
     const handleDeleteCourse=(state,course)=>{
-      console.log('arfn')
       const section=state;
       console.log(course,section);
       if(section===1){
         //dlt from comp sec
-        const newData=completeCourseDetails.filter(data=>data!==course);
-        setCompleteCourseDetails(newData);
-        setIncompleteCourseDetails([...incompleteCourseDetails,{_id:course}]);
+        const newData=completed.filter(data=>data!==course);
+        mainData.academicDetails.completed=newData
+        mainData.academicDetails.incompleted=[...incompleted,{_id:course}]
         setEditedCourses({addedToCompleted:[...editedCourses.addedToCompleted],deletedFromCompleted:[...editedCourses.deletedFromCompleted,course]})
         
       }
       else{
         //dlt from incomp sec
-        const newData=incompleteCourseDetails.filter(data=>data._id!==course);
-        setCompleteCourseDetails([...completeCourseDetails,course]);
-        setIncompleteCourseDetails(newData);
+        const newData=incompleted.filter(data=>data._id!==course);
+        mainData.academicDetails.completed=[...completed,course]
+        mainData.academicDetails.incompleted=newData;
         setEditedCourses({addedToCompleted:[...editedCourses.addedToCompleted,course],deletedFromCompleted:[...editedCourses.deletedFromCompleted]})
-
-
-
       }
     }
     const handleEditEligibleCourse=(id,course)=>{
       console.log(id,course);
-      const courseDetails=eligibleForCourse.filter(data=>data._id._id===course);
+      const courseDetails=eligibleForNextSemester.filter(data=>data._id._id===course);
       console.log(courseDetails[0]._id);
-      if(id===1){
-        setCustomisedData(customisedData.filter(data=>data!==course));
+      if(id===1){//id=1 means a course deleted from advised course section
+        const newAdvisedCourse=advisedCourses.filter(data=>data!==course);
+        mainData.customisedCourse=newAdvisedCourse;
         const newData={addCourse:[...customisedEligibleCourse.addCourse],removedCourse:[...customisedEligibleCourse.removedCourse,courseDetails[0]._id._id]}
         setCustomisedEligibleCourse(newData);
       }
       if(id===2){
-        setCustomisedData([...customisedData,course]);
+        // id=2 means,course delete from rest eligile course section
+        const newAdvisedCourse=[...advisedCourses,course];
+        mainData.customisedCourse=newAdvisedCourse;
         const newData={addCourse:[...customisedEligibleCourse.addCourse,courseDetails[0]._id._id],removedCourse:[...customisedEligibleCourse.removedCourse]}
         setCustomisedEligibleCourse(newData);
       }
@@ -71,34 +68,38 @@ const StudentProfile=(props)=>{
     }
     const confirmEligibleCourse=()=>{
       customisedEligibleCourse.id=personalDetails._id;
-      console.log(customisedEligibleCourse);
-      fetch(`http://localhost:5000/editStudentsEligibleCourse`,{
-        method:'POST',
-        body:JSON.stringify(customisedEligibleCourse),
-        headers:{
-          "Content-Type":"application/json"
-        }
+      // props.trackFunction("editEligibleCourse",customisedEligibleCourse)
+      // console.log(customisedEligibleCourse);
+      // fetch(`http://localhost:5000/editStudentsEligibleCourse`,{
+      //   method:'POST',
+      //   body:JSON.stringify(customisedEligibleCourse),
+      //   headers:{
+      //     "Content-Type":"application/json"
+      //   }
             
-        })
-        .then(res=>res.json())
-        .then(data=>{
+      //   })
+      //   .then(res=>res.json())
+      //   .then(data=>{
            
-            console.log(data);
-            setCustomisedEligibleCourse({addCourse:[],removedCourse:[]});
-            swal.fire({
-                position: 'middle',
-                icon: 'success',
-                title: 'Changes has done in Eligible Course section Successfully',
-                showConfirmButton: false,
-                timer: 1800
-              })
-        })
-        .catch(err=>{console.log(err)})
+      //       console.log(data);
+      //       setCustomisedEligibleCourse({addCourse:[],removedCourse:[]});
+      //       swal.fire({
+      //           position: 'middle',
+      //           icon: 'success',
+      //           title: 'Changes has done in Eligible Course section Successfully',
+      //           showConfirmButton: false,
+      //           timer: 1800
+      //         })
+      //   })
+      //   .catch(err=>{console.log(err)})
 
     }
     const confirmCompletedCourse=()=>{
-      console.log(editedCourses);
       editedCourses.id=personalDetails._id;
+      editedCourses.stName=personalDetails.name;
+      editedCourses.lastModified=getCurrentDtate_Time();
+      // console.log(editedCourses);
+      // props.trackFunction("editCompletedCourse",editedCourses)
       fetch(`http://localhost:5000/editStudentsCourses`,{
         method:'POST',
         body:JSON.stringify(editedCourses),
@@ -129,11 +130,12 @@ const StudentProfile=(props)=>{
           <Grid item lg={4}>
             <ul style={{listStyle:'none'}}>
               <Avatar alt="Remy Sharp" style={{width: "240px",height: "240px",borderRadius:'6px'}} src="" variant="square"/>
-              <br/>
-              <h5>About Student</h5>
+              <p style={{textAlign:'center',width: "220px",marginTop:'5px',marginBottom:'20px',fontWeight:'600',fontSize:'20px'}}>
+                {personalDetails.name}
+              </p>
               <li>
-                <h6>Name</h6>
-                <p>{personalDetails.name}</p>
+                <h6>Id</h6>
+                <p>{personalDetails._id}</p>
               </li>
               <li>
                 <h6>Department</h6>
@@ -162,7 +164,7 @@ const StudentProfile=(props)=>{
               <h5>Completed Courses</h5>
               <h6>Total Credit: {completeCredit}</h6>
               <Grid container>
-                {completeCourseDetails.map(data=> <Course course={data} func={handleDeleteCourse} id={"1"} showDltBtn={editCompleteCourseSection}></Course> )}
+                {completed.map(data=> <Course course={data} func={handleDeleteCourse} id={"1"} showDltBtn={editCompleteCourseSection}></Course> )}
               </Grid>
               <br/>
             </div>
@@ -171,13 +173,14 @@ const StudentProfile=(props)=>{
               <h5>Incompleted Courses</h5>
               <h6>Total Credit: {140-completeCredit}</h6>
               <Grid container>
-                {incompleteCourseDetails&&incompleteCourseDetails.map(data=><Course course={data._id}
+                {incompleted.map(data=><Course course={data._id}
                 func={handleDeleteCourse} id={"2"} showDltBtn={editCompleteCourseSection}></Course>)}
               </Grid>
+              {/* props.systemUser==="faculty"&& */}
               <br/> 
-              <Button size='small' variant="contained" color="primary" style={{marginRight:'5px'}} onClick={handleIncompletedEdit}>
+              {<Button size='small' variant="contained" color="primary" style={{marginRight:'5px'}} onClick={handleIncompletedEdit}>
                  <BiEdit style={{fontSize:'15px'}}/> Edit
-              </Button> 
+              </Button> }
               {editCompleteCourseSection&&<Button onClick={()=>{seteditCompleteCourseSection(false);confirmCompletedCourse()}} size='small' variant="contained" color="primary">
                  <BiEdit style={{fontSize:'15px'}}/> confirm
               </Button>}
@@ -188,19 +191,27 @@ const StudentProfile=(props)=>{
               <br/>
               <strong>courses that given by the advisor</strong>
               <Grid container>
-                {customisedData&&customisedData.map(data=>
-                <Course course={data} func={handleEditEligibleCourse} id={'1'} showDltBtn={changeEligibleCourse}></Course>)}
+                {advisedCourses.map(data=><Course 
+                  course={data} 
+                  func={handleEditEligibleCourse} 
+                  id={'1'} 
+                  showDltBtn={changeEligibleCourse}>
+                </Course>)}
               </Grid>
               <br/>
               <strong>Rest eligible Courses</strong>
               <Grid container>
-                {eligibleForCourse&&eligibleForCourse.map(data=>!customisedData.includes(data._id._id)&&
-                <Course id={'2'} func={handleEditEligibleCourse} course={data._id._id} showDltBtn={changeEligibleCourse}></Course>)}
+                {restEligibleCourse.map(data=><Course 
+                      id={'2'} func={handleEditEligibleCourse} 
+                      course={data._id._id} 
+                      showDltBtn={changeEligibleCourse}>
+                </Course>)}
               </Grid>
               <div>
-                <Button size='small' variant="contained" color="primary" onClick={()=>{setChangeEligibleCourse(true)}}>
+              {/* props.systemUser==="faculty"&& */}
+                {<Button size='small' variant="contained" color="primary" onClick={()=>{setChangeEligibleCourse(true)}}>
                   <BiEdit style={{marginRight:'3px',fontSize:'15px'}}/> Edit
-                </Button> 
+                </Button> }
                 {changeEligibleCourse&&<Button style={{marginLeft:'5px'}} size='small' variant="contained" color="primary" onClick={()=>{setChangeEligibleCourse(false);confirmEligibleCourse();}}>
                   confirm
                 </Button>}

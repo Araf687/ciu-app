@@ -15,7 +15,8 @@ const useStyles= makeStyles((theme)=>({
 
 function ParticularCourse(props) {
   const classes=useStyles();
-  const courseId=props.id._id;
+  const courseId=props.id._id||props._id;
+  console.log(courseId)
 
   const [{isDragging},drag]=useDrag(()=>({
     type:"courseData",

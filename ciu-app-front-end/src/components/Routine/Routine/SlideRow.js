@@ -40,7 +40,7 @@ function SlideRow(props) {
         props.changeRoutineData(data,props.data._id,slot)
     }
     
-  return (
+  return ( 
     <Grid container className={classes.root}>
         {props.heading?
         <>

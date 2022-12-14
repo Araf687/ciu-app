@@ -8,7 +8,11 @@ import RemoveIcon from '@material-ui/icons/Remove';
 import swal from 'sweetalert2';
 
 const useStyles=makeStyles(theme=>({
-    root:{backgroundColor:"#abc0c5",borderRadius:"8px",marginBottom:"10px"},
+    root:{backgroundColor:"#86bce3",
+    borderRadius:"8px",
+    marginBottom:"10px",
+    border:"1px solid #86bce3"
+},
     courseRow:{
         padding:"5px 10px 5px 10px",
         borderRadius:"8px",

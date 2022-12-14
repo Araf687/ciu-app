@@ -50,6 +50,7 @@ const StudentWiseROw=(props)=> {
             </Grid>
             <Grid item lg={8} style={{padding:'0px 5px'}}>
               <Grid container 
+              // style={{background:'yellow'}}
               >
                 {eligibleCourses.map(course=> <Course showDltBtn={props.deleteBtn} id={props.id} course={course} func={handleDeleteCourse} ></Course> )}
               </Grid>

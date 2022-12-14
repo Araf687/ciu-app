@@ -26,6 +26,8 @@ import RoutineBoard from '../../Routine/Routine/RoutineBoard';
 import ManageRoutineExternal from '../../Routine/ManageRoutineExternal/ManageRoutineExternal';
 import {DndProvider} from 'react-dnd';
 import {HTML5Backend} from 'react-dnd-html5-backend';
+import AdvisedStudent from '../../StudentSection/AdvisedStudent';
+import SurveyTracker from '../../SurveyTracker/SurveyTracker';
 
 
 export const contextAdmin=createContext();
@@ -69,6 +71,9 @@ const Admin = () => {
                         <Route path="/addStudents">
                             <AddStudent></AddStudent>
                         </Route>
+                        <Route path="/searchStudent">
+                            <SearchStudent></SearchStudent>
+                        </Route>
                         <Route path="/allTeachers">
                             <AllTeachers></AllTeachers>
                         </Route>
@@ -96,17 +101,14 @@ const Admin = () => {
                         <Route path="/routine">
                             <RoutineBoard></RoutineBoard>
                         </Route>
+                        <Route path="/advisedStudent">
+                            <AdvisedStudent></AdvisedStudent>
+                        </Route>
                         <Route path="/manageRoutineExternals">
                             <ManageRoutineExternal></ManageRoutineExternal>
                         </Route>
-                        <Route path="/result">
-                            {/* <Result></Result> */}
-                            {/* <OfferlistBoard></OfferlistBoard> */}
-                            <DndProvider backend={HTML5Backend}>
-                               <Extra></Extra>
-                            </DndProvider>
-                            
-                            {/* <SearchStudent></SearchStudent> */}
+                        <Route path="/surveyTracker">
+                            <SurveyTracker></SurveyTracker>
                         </Route>
                     </Switch>
                 </div>

@@ -11,6 +11,7 @@ import Avatar from '@mui/material/Avatar';
 import { contextUser } from '../../App';
 
 import swal from 'sweetalert2';
+import EditFormForStudent from '../CustomizedStyleComponent.js/EditFormForStudent';
 
 const useStyles=makeStyles(theme=>({
     breadcumbs:{
@@ -117,19 +118,22 @@ const AllStudent = () => {
     const [searchData,setSearchData]=useState();
     const [stData, setStData] = useState([]);
     const [user,,,]=useContext(contextUser);
+    const [allFaculties,setAllFaculties]=useState();
+    const [editBtnclick,setEditBtnClick]=useState(false);
+    const [editStInfo,setEditStInfo]=useState();
 
     const collums=[
-        {field:'id', headerName:'ID',width:"100"},
+        {field:'id', headerName:'ID',width:"160"},
         {
             field: "img",
             headerName: "image",
             width: "80",
             height: "500",
-            renderCell: (params) =>  <Avatar alt="Remy Sharp" sx={{ width: 45, height: 45 }}src={params.value} />
+            renderCell: (params) =>  <Avatar alt="Remy Sharp" sx={{ width: 45, height: 45 }} src={params.value} />
           },
 
-        {field:'name', headerName:'Name',width:"240"},
-        {field:'dept', headerName:'DEPT',width:"70"},
+        {field:'name', headerName:'Name',width:"230"},
+        {field:'dept', headerName:'DEPT',width:"80"},
         {field:'advisor', headerName:'Advisor',width:"200"},
         {field:'batch', headerName:'BATCH',width:"80"},
         {field:"action", headerName:'Actions',sortable:"false",renderCell:(cv)=> <><AiOutlineDelete style={{height:"35px",margin:"0px 10px",width:'25px',color:'red'}} onClick={()=>{clickDLT(cv.row)}}/> <BsPencilSquare onClick={()=>{clickEdit(cv.row)}} style={{height:"25px",width:'20px',color:'blue'}}/></>}
@@ -179,23 +183,29 @@ const AllStudent = () => {
         
     }
     const clickEdit=(data)=>{
-        
+        setEditStInfo(data);
+        setEditBtnClick(true);
     }
     useEffect(() => {
+        fetch("http://localhost:5000/allTeacher")
+        .then(res=>res.json())
+        .then(data=>{
+            setAllFaculties(data);
+        })
         fetch("http://localhost:5000/allStudents")
         .then(res=>res.json())
         .then(data=>{
-            if(data.length){let studentData=[];
-            const id=data[0]._id.toString();
-
+            if(data.length){
+                let studentData=[];
             data.map(dt=>{
+                let batch=dt._id.slice(0,2);
                 studentData.push({
-                    id:dt._id||0,
+                    id:dt._id||"",
                     img:dt.img&&dt.img.img,
-                    name:dt.name||"a",
-                    dept:dt.dept||"b",
-                    advisor:dt.advisor,
-                    batch:id[0]+id[1],
+                    name:dt.name||"",
+                    dept:dt.dept||"CSE",
+                    advisor:dt.advisor||"",
+                    batch:batch,
                     cgpa:1,
                 });
             })
@@ -216,6 +226,7 @@ const AllStudent = () => {
                         <span><Link to="/dashboard">Dashboard</Link> / All Students</span> 
                     </div>
                 </Grid>
+                {editBtnclick&&<EditFormForStudent prevData={editStInfo} editAction={[editBtnclick,setEditBtnClick]} allfac={allFaculties}></EditFormForStudent>}
                 <Paper className={classes.paper}>
                     <form onSubmit={handleSubmit(onSubmit)}>
                          <div className={classes.searchBar}>
@@ -235,7 +246,6 @@ const AllStudent = () => {
                             checkboxSelection
                             disableSelectionOnClick
                         />
-                        
                     </div>
 
                 </Paper>

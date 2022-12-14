@@ -53,7 +53,7 @@ const ProgressBar = (props) => {
     return (
         <Grid item xs={6} lg={2} style={{textAlign:'center'}}>
             <CircularProgressWithLabel value={progress} />
-            <h4 style={{margin:0,fontWeight:'700',color:'#070764'}}>Math 101</h4>
+            <h4 style={{margin:0,fontWeight:'700',color:'#070764'}}>{props.name}</h4>
             <small><strong style={{color:'gray'}}>5 classes</strong></small>
             
         </Grid>

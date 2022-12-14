@@ -4,6 +4,7 @@ import React, { PureComponent, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import NewOfferList from './NewOfferList';
 import CustomizedOfferList from './CustomizedOfferList';
+import {getNextSemester} from '../functions';
 
 const useStyles=makeStyles(them4=>({
     root:{},
@@ -88,7 +89,7 @@ const OfferlistBoard=()=> {
             currentSemester="Autumn";
             
         }
-        nextSemester=findNextSemester(currentSemester)+year.toString().substring(2, 4);
+        nextSemester=getNextSemester();
         currentSemester=currentSemester+year.toString().substring(2, 4);
         set_current_new_semester_({ciurrentSem:currentSemester,nextSem:nextSemester});
 

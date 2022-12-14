@@ -13,7 +13,7 @@ import AddIcon from '@material-ui/icons/Add';
 import CreateEvent from '../../Events/CreateEvent';
 import Events from '../../Events/Events';
 import { contextUser } from '../../../App';
-
+import swal from 'sweetalert2';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
     boxShadow:'0 10px 15px 0 rgb(0 0 0 / 10%)',
   },
   todaySchedule:{
-    minHeight:'444px'
+    // minHeight:'444px'
   },
   events:{
     paddingTop:"20px",
@@ -99,19 +99,33 @@ const useStyles = makeStyles((theme) => ({
 const Dashboard = () => {
   const classes=useStyles();
   const [eventsClick,setEventsClick]=useState(false);
-  const [events,setEvents]=useState();
+  const [events,setEvents]=useState([]);
   const [user,,,,]=useContext(contextUser);
+  // console.log(user)
 
   useEffect(()=>{
-    fetch(`http://localhost:5000/getEvent`)
+    fetch(`http://localhost:5000/getDashboardData`)
     .then(res=>res.json())
     .then(data=>{
         if(data){
-          setEvents(data);
+          console.log(data);
+          setEvents(data.event);
         }
     })
     .catch(err=>{console.log(err)})
   },[])
+  const confirmEvent=(eventData)=>{
+    // console.log([eventData])
+    const newEvent=[...events,eventData]
+    console.log(newEvent);
+    setEvents();
+    console.log(events);
+    swal.fire(
+      'Good job!',
+      `Added event Successfully`,
+      'success'
+    )
+  }
   return (
     <div className={classes.root}>
       <Grid container spacing={3}>
@@ -188,29 +202,31 @@ const Dashboard = () => {
             </div>
           </Paper>
         </Grid>
-        <Grid item xs={12} lg={9}>
-          {user.role==="teacher"&&<><Paper className={classes.paper}>
+        <Grid item xs={12} lg={12}>
+          {
+          user.role==="Teacher"&&
+          <><Paper className={classes.paper}>
             <h3 style={{marginTop:'0'}}>
               Courses Progress
             </h3>
             <Grid container spacing={2}>
-              <ProgressBar value={63}></ProgressBar>
-              <ProgressBar value={45}></ProgressBar>
-              <ProgressBar value={33}></ProgressBar>
+              <ProgressBar name={"CSE101"} value={63}></ProgressBar>
+              <ProgressBar name={"CSE115"} value={45}></ProgressBar>
+              <ProgressBar name={"MAT101"} value={33}></ProgressBar>
             </Grid>
           </Paper><br/></>}
           <Paper className={classes.paper}>
-            <CiuCalendar></CiuCalendar>
+            <CiuCalendar calData={events}></CiuCalendar>
           </Paper>
         </Grid>
-        <Grid item lg={3} xs={12}>
-          <Paper className={classes.paper,classes.todaySchedule}>
+        <Grid item lg={12} xs={12}>
+          <Paper>
             <div className={classes.events}>
               <h5>Events</h5>
             </div>
             <hr></hr>
-            <div style={{height:"330px",overflowY:"auto"}}>
-              {eventsClick && <CreateEvent eventClick={setEventsClick}/>}
+            <div style={{minHeight:"100px",overflowX:"auto"}}>
+              {eventsClick && <CreateEvent confirmEvent={confirmEvent} eventClick={setEventsClick}/>}
               {events && events.map(data=> <Events data={data}></Events>)}
             </div>
             <div className={classes.eventBTN} onClick={()=>{setEventsClick(true)}}>

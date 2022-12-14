@@ -21,15 +21,17 @@ const useStyles = makeStyles((theme) => ({
 const Events=(props)=> {
     const classes=useStyles();
     const {data}=props;
-    console.log(typeof(data.date));
+    const dateStamp=new Date(data.date);
+    const time=dateStamp.toLocaleString([], {hour: '2-digit', minute:'2-digit'});
+    console.log(data);
     return (
       <div className={classes.root}>
           <div className={classes.body}>
             <h5>
-              {data.eventTitle}
+              {data.title}
             </h5>
-            <p style={{margin:0}}>{new Date(data.date).toDateString()}</p>
-            <small>{"Time: "+data.time}</small>
+            <p style={{margin:0}}>{new Date(data.star).toDateString()}</p>
+            <small>{"Time: "+time}</small>
             <small style={{float:"right"}}>{"Duration: "+data.duration+" hr"}</small>
           </div>
           <hr></hr>

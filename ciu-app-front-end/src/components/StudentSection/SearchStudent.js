@@ -6,6 +6,7 @@ import { styled, alpha } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import { Link } from 'react-router-dom';
 import StudentProfile from './StudentProfile';
+import swal from 'sweetalert2';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -43,15 +44,14 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
       width: '20ch',
     },
   },
-}));
-
+}))
 
 const useStyles=makeStyles(theme=>({
     searchSection:{
         display:"flex",
-        backgroundColor:'#5ccb8d',
+        backgroundColor:'#2d8ca9',
         borderRadius:'6px',
-        border:'2px solid #35bd72',
+        border:'2px solid #2d8ca9',
         padding:'10px'
 
     },
@@ -87,20 +87,38 @@ const useStyles=makeStyles(theme=>({
     },
 }))
 const SearchStudent=()=>{
-    const classes=useStyles();
+    const classes=useStyles(); 
     const [studentData,setSudentData]=useState();
     const handleSearch=()=>{
-        const x=document.getElementById('search').value;
-        console.log(typeof(x));
+        const studentId=document.getElementById('search').value;
+        console.log(typeof(studentId));
 
-        fetch(`http://localhost:5000/searchStudentById/${x}`)
+        fetch(`http://localhost:5000/searchStudentById/${studentId}`)
         .then(res=>res.json())
         .then(data=>{
-            console.log(data);
-            setSudentData(data);
+          console.log(data);
+            if('id' in data){
+              setSudentData(data);
+              console.log(data);
+            }
+            else{
+              swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Something went wrong! check your search id or the internet connection',
+              })
+            }
+            
         })
-        .catch(err=>{console.log(err)})
-    }
+        .catch(err=>{
+          swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong!',
+            footer: `<a href="">${err}</a>`
+          })
+        })
+    } 
     return (
       <div>
         <div className={classes.breadcumbs}> 
@@ -116,20 +134,20 @@ const SearchStudent=()=>{
                 </SearchIconWrapper>
                 <input
                 id='search'
-                style={{width:'100%',fontWeight:'700',color:'#060c5a',height:'39px',marginLeft:'0px',paddingLeft:'2.1rem'}}
+                style={{width:'100%',fontWeight:'700',background:'ghostwhite',color:'#060c5a',height:'39px',marginLeft:'0px',paddingLeft:'2.1rem'}}
                 className={classes.searchBar}
                 onFocus={()=>{document.getElementById('search').style.border = "none"; }}
                 placeholder='Search By Id...'
-                 ></input>
+                ></input>
             </Search>
             <Button variant="contained" size="medium" onClick={()=>{handleSearch()}} style={{margin:"2px",backgroundColor:'#091176e3'}}>
                 Search
             </Button>
         </section>
         <section>
-            {studentData &&<StudentProfile data={studentData}></StudentProfile>}
+            {studentData &&<StudentProfile data={studentData} setData={setSudentData}></StudentProfile>}
         </section>
-      </div>
+      </div> 
     )
   }
 export default SearchStudent;

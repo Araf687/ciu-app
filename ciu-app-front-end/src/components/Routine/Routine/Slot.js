@@ -38,8 +38,9 @@ function Slot(props) {
       props.dataDropped(data,props.slot);
       setIsDataDropped(true);
   }
+  const slotData=props.slotData;
   return (
-    <>{isCustomize===true?<div ref={drop} style={{height:'36px'}} 
+    <>{(isCustomize===true)?<div ref={drop} style={{height:'36px'}} 
       className={clsx( {[classes.course]:isDataDropped&&typeof(props.slotData)!=="boolean"})}
     >
       {typeof(props.slotData) !== "boolean"&&

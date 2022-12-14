@@ -1,4 +1,4 @@
-import {Collapse, Divider, Drawer, List, ListItem, ListItemText, makeStyles } from '@material-ui/core';
+import {Avatar, Collapse, Divider, Drawer, List, ListItem, ListItemText, makeStyles } from '@material-ui/core';
 import React, { useContext, useState } from 'react';
 import MenuIcon from '@material-ui/icons/Menu';
 import clsx from 'clsx';
@@ -7,7 +7,9 @@ import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import AssignmentOutlinedIcon from '@material-ui/icons/AssignmentOutlined';
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
-import userImg from '../../../src/image/opu.jpg';
+import admin from '../../../src/image/opu1.png';
+import manager from '../../../src/image/manager.png';
+import teacher from '../../../src/image/user.png';
 import {
     Link
   } from "react-router-dom";
@@ -177,10 +179,13 @@ const Sidebar = (props) => {
                     </ListItem>
                     <Divider></Divider>
                     
-                    <div className={clsx({[classes.userDetails]:open,[classes.userDetailsThumbnail]:!open})}>
-                        <img src={userImg} alt=""/>
+                    <div 
+                    className={clsx({[classes.userDetails]:open,[classes.userDetailsThumbnail]:!open})}
+                    >
+                        <img src={user.role==='Admin'?admin:user.role==='Manager'?manager:teacher} alt=""/>
+                        {/* <Avatar alt="Remy Sharp" src={""} classes={clsx({[classes.userDetails]:open,[classes.userDetailsThumbnail]:!open})} /> */}
                         <br></br>
-                        <strong>{user.name}</strong>
+                        <strong>{user.role==='Manager'?'Manager':user.role==='Admin'?'Admin':user.name}</strong>
                     </div>
                     <Divider></Divider>
                 </List>
@@ -206,10 +211,22 @@ const Sidebar = (props) => {
                                 <ListItemText classes={{primary:classes.listItem}}  primary="All Students" />
                             </ListItem>
                         </Link>
-                       {user.role==='Manager' && <Link to="/addStudents">
+                       {user.role==='Manager'||user.role==='Admin' && <Link to="/addStudents">
                             <ListItem button>
                                 <PeopleAltOutlinedIcon className={classes.drawerIcons}></PeopleAltOutlinedIcon>
                                 <ListItemText classes={{primary:classes.listItem}}  primary="Add Students" onClick={()=>{setAddOptions({title:"Add student",fieldName:"Student Id", fetchUrl:"addStudent",insertMany:"addManyStudent"})}}/>
+                            </ListItem>
+                        </Link>}
+                        <Link to="/searchStudent">
+                            <ListItem button>
+                                <PeopleAltOutlinedIcon className={classes.drawerIcons}></PeopleAltOutlinedIcon>
+                                <ListItemText classes={{primary:classes.listItem}}  primary="Search Student" />
+                            </ListItem>
+                        </Link>
+                        {user.role==='Teacher'&&<Link to="/advisedStudent">
+                            <ListItem button>
+                                <PeopleAltOutlinedIcon className={classes.drawerIcons}></PeopleAltOutlinedIcon>
+                                <ListItemText classes={{primary:classes.listItem}}  primary="Advised Student" />
                             </ListItem>
                         </Link>}
                         
@@ -227,7 +244,7 @@ const Sidebar = (props) => {
                                 <ListItemText classes={{primary:classes.listItem}}  primary="All Teachers" />
                             </ListItem>
                         </Link>
-                        {user.role==='Manager' && <Link to="/addTeachers" onClick={()=>{setAddOptions({title:"Add Teacher",fieldName:"Teacher Id", fetchUrl:"addTeacher",insertMany:"addManyTeacher"})}}>
+                        {user.role==='Manager' || user.role==='Admin' && <Link to="/addTeachers" onClick={()=>{setAddOptions({title:"Add Teacher",fieldName:"Teacher Id", fetchUrl:"addTeacher",insertMany:"addManyTeacher"})}}>
                             <ListItem button>
                                 <PeopleAltOutlinedIcon className={classes.drawerIcons}></PeopleAltOutlinedIcon>
                                 <ListItemText classes={{primary:classes.listItem}}  primary="Add Teachers" />
@@ -265,7 +282,7 @@ const Sidebar = (props) => {
                         <strong className={clsx({[classes.displayNone]:!open},classes.listIcon)}>{openCourse ? <RemoveIcon /> : <AddIcon />}</strong>
                     </ListItem>
                     <Collapse className={clsx({[classes.displayNone]:!open},classes.collapseList)} in={openCourse} timeout="auto" unmountOnExit>
-                        {user.role==='Manager'&&<Link to="/addCourses">
+                        {user.role==='Teacher'||user.role==='Admin'&&<Link to="/addCourses">
                             <ListItem button>
                                 <PeopleAltOutlinedIcon className={classes.drawerIcons}></PeopleAltOutlinedIcon>
                                 <ListItemText classes={{primary:classes.listItem}} primary="Add Course" />
@@ -302,7 +319,7 @@ const Sidebar = (props) => {
                         </Link>
                         
                     </Collapse>
-                     {/* ---------------------------offerList end--------------- */}
+                     {/* --------------------------offerList end--------------- */}
 
                      {/* ------------------------------Routine section starts----------- */}
                      <ListItem button onClick={()=>{handleClick(setOpenRoutine,openRoutine);}} className={classes.sideMenuItems}>
@@ -328,10 +345,10 @@ const Sidebar = (props) => {
 
                      {/* ------------------------------Routine section Ends----------- */}
                 
-                    <Link to="/result"><ListItem className={classes.sideMenuItems}>
+                    {user.role==='Admin'&&<Link to="/surveyTracker"><ListItem className={classes.sideMenuItems}>
                         <AssignmentOutlinedIcon  className={classes.drawerIcons}></AssignmentOutlinedIcon>
-                        <ListItemText className={clsx({[classes.displayNone]:!open})} primary={"result"}></ListItemText>
-                    </ListItem></Link>
+                        <ListItemText className={clsx({[classes.displayNone]:!open})} primary={"Survey Tracker"}></ListItemText>
+                    </ListItem></Link>}
                 </List>
         
             </Drawer>

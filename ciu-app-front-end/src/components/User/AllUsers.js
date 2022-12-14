@@ -35,22 +35,15 @@ const useStyles=makeStyles(theme=>({
     },
 
 })) 
-
-// const userData=[
-// {dept: "",name: "Araf",role: "Manager",id: "arafyeasin687@gmail.com"},
-// { id: 'arafyeasin@gmail3.com', name: 'Mohammad Yeasin', role: 'Admin', dept: 'q'},
-// { id: 'istiakopu@gmail.com', name: 'Istiak Opu', role: 'Teacher', dept: 'EEE'}
-// ]
-
 const AllUsers=()=>{
     const classes=useStyles();
     const [userData, setUserData] = useState([]);
 
     const collums=[
+        {field:'profile', headerName:'Profile ',width:"150"},
         {field:'id', headerName:'Email Id',width:"250"},
         {field:'name', headerName:'Name',width:"250"},
         {field:'role', headerName:'User Role',width:"200"},
-        {field:'dept', headerName:'Department ',width:"150"},
         {field:"action", headerName:'Actions',sortable:"false",renderCell:(cv)=> <><AiOutlineDelete style={{height:"35px",margin:"0px 10px",width:'25px',color:'red'}} onClick={()=>{clickDLT(cv.row)}}/> <BsPencilSquare style={{height:"25px",width:'20px',color:'blue'}}/></>}
     ];
     const clickDLT=(cellValues)=>{
@@ -97,8 +90,8 @@ const AllUsers=()=>{
         <Grid container>
             <Grid item xs={12}>
                 <div className={classes.breadcumbs}>
-                    <h2>All Students</h2>
-                    <span><Link to="/dashboard">Dashboard</Link> / All Students</span> 
+                    <h2>All Users</h2>
+                    <span><Link to="/dashboard">Dashboard</Link> / All Users</span> 
                 </div>
             </Grid>
             <Paper className={classes.paper}>

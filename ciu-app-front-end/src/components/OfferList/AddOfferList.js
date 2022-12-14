@@ -104,14 +104,16 @@ const AddOfferList = () => {
             console.log(xl_row_object);
             xl_row_object.map(data=>{
                 const completionObject={};
-                completionObject._id=data._id;
+                completionObject._id=data._id.toString();
                 delete data._id;
 
-                const keys=Object.keys(data);
-
+                const keys=Object.keys(data).filter(key=>key.length===6 || (key[key.length-1]==='L'&&key.length===7));
+                
                 const category=[];
 
-                optionalCourses.map(course=>{
+                if(keys.length>0){
+                    console.log("_id: ", completionObject._id,typeof(completionObject),"opt: ", optionalCourses)
+                    optionalCourses.map(course=>{
 
                     if(keys.includes(course._id)){
                         category.push(course.category)
@@ -121,8 +123,9 @@ const AddOfferList = () => {
                     electiveCourseArray.push({_id:completionObject._id,category:category,length:category.length});
                 }
                 
-                completionObject.completed=Object.keys(data);
-                completionObjectArray.push(completionObject);
+                completionObject.completed=keys;
+                completionObjectArray.push(completionObject);}
+                
             })
             const mainData={completionObjectArray:completionObjectArray,electiveCourseArray:electiveCourseArray};
             console.log(mainData);

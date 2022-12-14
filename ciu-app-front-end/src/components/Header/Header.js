@@ -98,7 +98,7 @@ const Header = () => {
             <AppBar position='fixed' className={clsx(classes.menu,classes.appBar,{[classes.shiftAppBar]:appbarShift})} >
                 <Grid container >
                     <Grid item xs={12} lg={12}>
-                    <strong style={{color:'black'}}>as <TiThMenu></TiThMenu></strong>
+                    {/* <strong style={{color:'black'}}>as <TiThMenu></TiThMenu></strong> */}
                         <div style={{float:"right"}}>
                             <IconButton className={classes.navIcons}>
                                 <Badge><EmailOutlinedIcon ></EmailOutlinedIcon></Badge>

@@ -26,16 +26,23 @@ const useStyles=makeStyles(theme=>({
 }))
 
 function OfferedCourseRow(props) {
+  
   const data=props.data;
-  // console.log(props.allFaculties);
+  console.log(data);
+  console.log(props.allFaculties);
+  // data.faculty.append("TBA");
   const {eligibleStudents}=data;
   const {ignoredStudent}=data;
   const batchData=getBatchFromStudentsId(eligibleStudents);
   const batch=Object.keys(batchData);
-  const ignoredBatchData=getBatchFromStudentsId(ignoredStudent);
-  const ignoredBatch=Object.keys(ignoredBatchData);
-  const [faculty, setFaculty] = React.useState(data.faculty===''?"TBA":data.faculty);
+  const ignoredBatchData=ignoredStudent.map(data=>{
+    const obj={batch:data[0].toString().slice(0,3),numberOfStudents:data.length}
+    return obj;
+  });
+  // const ignoredBatch=Object.keys(ignoredBatchData);
+  const [faculty, setFaculty] = React.useState(data.faculty||"TBA");
   const allFaculties=props.allFaculties;
+  // allFaculties.push("TBA")
   const handleChangeFaculty = (event) => {
     
     const facultyName=event.target.value;
@@ -55,41 +62,47 @@ function OfferedCourseRow(props) {
     })
   };
 
-  const deleteBatch=(batch,studentPerBatch)=>{
+  const removeBatchFromEligible=(batch,studentPerBatch)=>{
     console.log(batch);
-    props.func[0](batch,data._id._id,studentPerBatch);
+    props.func[0](batch,data._id._id,'eligibleList');
+  }
+  const removeBatchFromIgnored=(batch,studentPerBatch)=>{
+    props.func[0](batch,data._id._id,'ignoredList');
   }
 
- 
+  
   // console.log(data);
   const classes=useStyles();
   return (
     <Grid container className={classes.root}>
-        <Grid xs={12} lg={1}>
+        <Grid item xs={12} lg={1}>
           <strong>{props.slNo}</strong>
         </Grid>
-        <Grid xs={12} lg={1}>
+        <Grid item xs={12} lg={1}>
           <strong>{data._id._id}</strong>
         </Grid>
-        <Grid xs={12} lg={4}>
+        <Grid item xs={12} lg={4}>
           <Grid container>
             {batch&&batch.map(dt=><Batch data={dt} 
               showDltButton={props.showDeleteBtn} 
               studentPerBatch={batchData[dt]}
-              dltBatch={deleteBatch}
+              dltBatch={removeBatchFromEligible}
               >
             </Batch>)}
           </Grid>
         </Grid>
-        <Grid xs={12} lg={3}>
-            {ignoredBatch&&ignoredBatch.map(dt=><Batch data={dt} 
+        <Grid item xs={12} lg={3}>
+          <Grid container>
+              {ignoredBatchData&&ignoredBatchData.map(dt=><Batch data={dt.batch} 
                   showDltButton={props.showDeleteBtn} 
-                  studentPerBatch={ignoredBatch[dt]}
-                  // dltBatch={deleteBatch}
+                  studentPerBatch={dt.numberOfStudents}
+                  dltBatch={removeBatchFromIgnored}
                   >
-                </Batch>)}
+              </Batch>)}
+          </Grid>
+            
         </Grid>
-        <Grid xs={12} lg={3}>
+        <Grid item xs={12} lg={3}>
           <FormControl size="small">
             <InputLabel id="demo-select-small">faculty</InputLabel>
             <Select
@@ -101,7 +114,7 @@ function OfferedCourseRow(props) {
               autoWidth={true}
               inputProps={{ readOnly: props.changeFaculty}}
             >
-              <MenuItem value={faculty}><small>{faculty}</small></MenuItem>
+              {props.changeFaculty==true&&<MenuItem value={faculty}><small>{faculty}</small></MenuItem>}
               {allFaculties&&allFaculties.map(faculty=><MenuItem value={faculty.name||(faculty.firstName+faculty.lastName)}><small>{faculty.name||(faculty.firstName+faculty.lastName)}</small></MenuItem>)}
             </Select>
           </FormControl>

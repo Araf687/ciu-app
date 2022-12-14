@@ -48,6 +48,7 @@ function AlterBatchInAdvisingCourse() {
     fetch("http://localhost:5000/allTeacher")
     .then(res=>res.json())
     .then(data=>{
+      data.push({name:"TBA"});
       setAllFaculties(data);;
     })
     setShowDeleteBtn(true);
@@ -94,15 +95,41 @@ function AlterBatchInAdvisingCourse() {
     setShowDeleteBtn(false);
     setChangeFaculty(true);
   }
-  const alterBatch=(batch,courseId)=>{
-    console.log(batch,courseId);
-    let newData=routineData.map(data=>{
-      if(data._id._id===courseId){
-        data.ignoredStudent.push(data.eligibleStudents.filter(data=>Math.floor(data/10)===batch));
-      }
-      return data;
-    })
-    setRoutineData(newData);
+  const alterBatch=(batch,courseId,listName)=>{
+    console.log(typeof(batch),courseId);
+    if(listName==='eligibleList')
+    {
+      let newData=routineData.map(data=>{
+        if(data._id._id===courseId){
+          const students=data.eligibleStudents.filter(data=>data.toString().slice(0,3)===batch)
+          data.ignoredStudent=[...data.ignoredStudent,students];
+          const newEligibles=data.eligibleStudents.filter(data=>data.toString().slice(0,3)!==batch);
+          data.eligibleStudents=newEligibles
+        }
+        return data;
+      })
+      console.log(newData)
+      setRoutineData(newData);
+    }
+    else{
+      console.log(batch,courseId);
+      const newData=routineData.map(data=>{
+        if(data._id._id===courseId){
+          console.log(data);
+          const newEligibles=data.ignoredStudent.filter(data=>data[0].toString().slice(0,3)===batch);
+          data.eligibleStudents=[...data.eligibleStudents,...newEligibles]
+          const newIgnoredBatch=data.ignoredStudent.filter(data=>data[0].toString().slice(0,3)!==batch);
+          data.ignoredStudent=newIgnoredBatch;
+
+          
+        }
+        return data;
+      })
+      setRoutineData(newData);
+      // console.log(newData)
+    }
+  }
+  const alterFromIngnored=()=>{
 
   }
   const setFaculty=(courseId,facultyName)=>{
@@ -113,17 +140,28 @@ function AlterBatchInAdvisingCourse() {
       return data;
     });
     setRoutineData(updateRoutineData);
-  }
+  } 
   useEffect(()=>{
     console.log(nextSemester);
     fetch(`http://localhost:5000/getDataForAlterBatch/${nextSemester}`)
       .then(response => response.json())
       .then(data => {
+        console.log(data);
         if(data.data.length>0&&data.data[0].customiseList[0].hasOwnProperty('faculty')){
           setRoutineData(data.data[0].customiseList);
         }
         else{
-          setRoutineData(advisingArray_to_RoutineArray(data.data[0].customiseList));
+          if(data.data.length===0){
+            swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Something went wrong! no customisation has been done by the system. Please customise the offfer list first',
+            })
+          }
+          else{
+            setRoutineData(advisingArray_to_RoutineArray(data.data[0].customiseList));
+          }
+          
         }
         setExternalData(data.data[0]);
     })
@@ -131,7 +169,7 @@ function AlterBatchInAdvisingCourse() {
   return (
     <div>
       <div style={{textAlign:'right',marginBottom:'10px'}}>
-        <Button style={{marginLeft:'15px'}} variant="contained">Alter Automatically</Button>
+        {/* <Button style={{marginLeft:'15px'}} variant="contained">Alter Automatically</Button> */}
         {showDeleteBtn===false?
         <Button style={{marginLeft:'15px'}} 
         onClick={()=>{clickCustomizeManually()}} 
@@ -175,7 +213,7 @@ function AlterBatchInAdvisingCourse() {
       changeFaculty={changeFaculty}
       func={[alterBatch,setFaculty]}
       allFaculties={allFaculties}
-      >
+      > 
       
       </OfferedCourseRow>)}
     </div>

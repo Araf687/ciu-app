@@ -242,11 +242,10 @@ const handleCheck=()=>{
                                   dltBtn={showDeleteBtn} 
                                   rowData={data} slNo={i++}
                                   delete={handleDelete}
-                                  dltBatch={handleDeleteBatch}>
-                                  
+                                  dltBatch={handleDeleteBatch}>   
                               </OfferTableRow>)
         } 
-        </>
+        </> 
         :stWiseCourses==true&&offerData?
           <StudentWiseofferedCourse 
             state={setStWiseCourses}  

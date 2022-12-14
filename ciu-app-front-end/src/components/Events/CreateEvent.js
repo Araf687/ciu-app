@@ -11,6 +11,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import { useForm } from 'react-hook-form';
 import { Grid } from '@mui/material';
+import swal from 'sweetalert2'; 
 const useStyles = makeStyles((theme) => ({
   root:{
     padding:"20px",
@@ -26,23 +27,39 @@ const CreateEvent=(props)=>{
   const [date,setDate]=React.useState(new Date());
   const [time,setTime]=React.useState(null);
   const { register,handleSubmit,formState: { errors } } = useForm();
-  const onSubmit = data => {
-    
-    data.date=date;
-    console.log(data);
+  const onSubmit = eventData => {
+    eventData.start=date;
+    eventData.end=date;
+    eventData.category='event';
     const formData=new FormData();
-    formData.append("eventsData",JSON.stringify(data));
+    formData.append("eventsData",JSON.stringify(eventData));
     fetch(`http://localhost:5000/addEvent`,{
         body:formData,
         method:"post"
     })
     .then(res=>res.json())
     .then(data=>{
-        if(data){
+      console.log("..................",data)
+      
+        if(data===true){
+          console.log(eventData)
           handleClose();
+          props.confirmEvent(eventData);
+          swal.fire(
+            'Good job!',
+            `Added event Successfully`,
+            'success'
+          )
+        }
+        else{
+          swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text:'something went wrong',
+          })
         }
     })
-    .catch(err=>{console.log(err)})
+    // .catch(err=>{console.log(err)})
   }
 
   const handleClose = () => {
@@ -74,9 +91,9 @@ const CreateEvent=(props)=>{
             <Grid item xs={12} lg={12}>
               <div className={classes.eventSection}>
                 <TextField style ={{width: '100%'}} id="outlined-basic" label="Event 
-                Title" variant="outlined" {...register("eventTitle",{ required: true })} />
+                Title" variant="outlined" {...register("title",{ required: true })} />
               </div>
-              {errors.eventTitle && <span style={{color:"red",fontWeight:"600"}}>This field is required</span>}
+              {errors.title && <span style={{color:"red",fontWeight:"600"}}>This field is required</span>}
             </Grid>
             <Grid item xs={12} lg={12}>
               <div className={classes.eventSection}>
@@ -109,7 +126,7 @@ const CreateEvent=(props)=>{
                   label="Time"
                   value={time}
                   onChange={handleTimeChange}
-                  renderInput={(params) => <TextField {...params} {...register("time")}/>}
+                  renderInput={(params) => <TextField {...params} {...register("startingtTime")}/>}
                 />
               </div>
             </Grid>
@@ -128,7 +145,7 @@ const CreateEvent=(props)=>{
               {errors.duration && <span style={{color:"red",fontWeight:"600"}}>This field is required</span>}
             </Grid>
             <Grid item xs={12} lg={12}>
-              <Button type="submit"  style ={{width: '100%'}} color='success' variant="contained">Confirm Event</Button>
+              <Button type="submit"  style ={{width: '100%',background:'#04407a'}}  variant="contained">Confirm Event</Button>
             </Grid>
           </Grid></LocalizationProvider>
         </form>

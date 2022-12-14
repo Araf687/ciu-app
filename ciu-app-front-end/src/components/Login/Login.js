@@ -117,7 +117,12 @@ const Login = () => {
                     const user = userCredential.user;
                     // ...
                     console.log("USER CREATED");
-                    setConfirmationSms({sms:"User Created Successfully",color:"green"});
+                    swal.fire(
+                        'Good job!',
+                        `User Created Successfully`,
+                        'success'
+                      )
+                      setCreateAccount(false);
                 })
                 .catch((error) => {
                     const errorCode = error.code;
@@ -128,15 +133,25 @@ const Login = () => {
                         icon: 'error',
                         title: 'Oops...',
                         text: 'Something went wrong!',
-                        footer: '<a href="">Why do I have this issue?</a>'
+                        confirmButtonText: 'Error Issue'
+                      }).then((result) => {
+                        /* Read more about isConfirmed, isDenied below */
+                        if (result.isConfirmed) {
+                          swal.fire(errorMessage)
+                        } 
                       })
                     // ..
                 });
-
-
             }
-            
+            else{
+                swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Email is not valid!',
+                  })
+            }
         }
+
         else{
             setShow(false)
             const {email,password}=data;
@@ -146,7 +161,6 @@ const Login = () => {
             .then((userCredential) => {
                 // Signed in 
                 const user = userCredential.user; 
-
                 fetch(`http://localhost:5000/userById/${email}`)
                 .then(res=>res.json())
                 .then(data=>{
@@ -156,14 +170,22 @@ const Login = () => {
                         setShow(false)
                         history.push('/');
                     }
-                })   
-
+                }) 
+                .catch(e=>{
+                    swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text:'failed to fetch. Check your network connection',
+                      })
+                      setShow(true)
+                })
                 
             })
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
                 console.log(errorMessage);
+                setShow(true);
                 swal.fire({
                     icon: 'error',
                     title: 'Oops...',
@@ -183,8 +205,12 @@ const Login = () => {
             {
                 return (true)
             }
-                alert("You have entered an invalid email address!")
-                return (false)
+            swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'You have entered an invalid email address!',
+            })
+            return (false)
         }
         const saveUsertoStorage=(userDetails)=>{
             sessionStorage.setItem('user',JSON.stringify(userDetails)); 

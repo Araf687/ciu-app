@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react';
-import {Grid, makeStyles, Paper} from '@material-ui/core'
+import React, { useContext, useState,useEffect } from 'react';
+import {Grid, makeStyles, NativeSelect, Paper} from '@material-ui/core'
 import { useForm } from "react-hook-form";
 import TextField from "@mui/material/TextField";
 import { inputLabelClasses } from "@mui/material/InputLabel";
@@ -68,18 +68,35 @@ const AddInfoForm = () => {
     const [date, setDate] = useState(null);
     const [gender, setGender] = React.useState('');
     const [dept,setDept]= useState("");
-    const [imgFile,setImgFile]=useState({name:"Upload your image here"})
+    const [imgFile,setImgFile]=useState({name:"Upload your image here"});
+    const [error,setError]=useState([0,0,0,0,0])
+    const [selectedFaculty,setSelectedFaculty]=useState();
+    const [allFaculties,setAllFaculties]=useState();
 
     const hiddenFileInput = React.useRef(null);
 
     const [,,addOptions,]=useContext(contextUser);
+    
+    useEffect(() => {
+        fetch("http://localhost:5000/allTeacher")
+        .then(res=>res.json())
+        .then(data=>{
+            console.log(data);
+            setAllFaculties(data);
+        })
+    }, [])
+    
 
-    const { register, handleSubmit } = useForm();
+    const { register, handleSubmit,formState: { errors } } = useForm();
     const handleChangeFile=(e)=>{
         const file=e.target.files[0]
         setImgFile(file);
         
      }
+     const handleChangeFaculty = (event) => {
+        console.log(addOptions.fetchUrl);
+        setSelectedFaculty(event.target.value);
+      };
     const onSubmit = (data) => {
         const {firstName,lastName,phone,age,email}=data;
         const newObject={
@@ -93,21 +110,24 @@ const AddInfoForm = () => {
             gender:gender,
             dob:date,
         };
+        const flag=0;
+        addOptions.fetchUrl==="addStudent"?newObject.advisor=selectedFaculty:flag=1;
         const formData=new FormData();
         if(imgFile.name[0]==='U'){
             formData.append("file",null);
         }
         else{
-            formData.append("file",imgFile);
+            formData.append("file",JSON.stringify(imgFile));
         }
         formData.append("data",JSON.stringify(newObject));
+        console.log(formData);
         fetch(`http://localhost:5000/${addOptions.fetchUrl}`,{
             body:formData,
             method:"post"
         })
         .then(res=>res.json())
         .then(data=>{
-            console.log(data);
+            console.log(data,typeof(data));
             handleCancelClick();
             swal.fire({
                 position: 'middle',
@@ -148,7 +168,31 @@ const AddInfoForm = () => {
         setDept(null); 
         setDate(null);
       }
-     
+     const validateForm=(e,option)=>{
+        const data=e.target.value;
+        console.log(option)
+        const tempError=error;
+        if(option=="email"){
+            if(!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(data)){
+                tempError[0]++;
+                console.log(tempError)
+                document.getElementById("email").style.display = "block";
+            }
+            else{
+                tempError[0]=0;
+                console.log(tempError)
+                document.getElementById("email").style.display = "none";
+            }
+        }
+        if(option=="phone"){
+            data.length==11&&data[0]==0&&data[1]==1&&data[2]>2&&data[2]<10?document.getElementById("phone").style.display = "none":document.getElementById("phone").style.display = "block";
+        }
+        if(option=="s_id"){
+            data.length==8||data.length==16?document.getElementById("s_id").style.display = "none":document.getElementById("s_id").style.display = "block";
+        }
+        console.log(tempError)
+        setError(tempError)
+     }
      
     return (
         <section>
@@ -161,7 +205,7 @@ const AddInfoForm = () => {
                 <form onSubmit={handleSubmit(onSubmit)} id="add_student_form">
                     <Grid container spacing={5} className={classes.formRoot}>
                     
-                        <Grid item xs={12} lg={6}>
+                        <Grid item xs={12} lg={addOptions.fetchUrl==="addStudent"?4:6}>
                             <TextField
                             required 
                             variant="standard"
@@ -177,8 +221,9 @@ const AddInfoForm = () => {
                                     fontWeight:'550'
                             }} }}
                             />
+                            <span></span>
                         </Grid>
-                        <Grid item xs={12} lg={6}>
+                        <Grid item xs={12} lg={addOptions.fetchUrl==="addStudent"?4:6}>
                             <TextField 
                             
                              variant="standard"
@@ -192,8 +237,23 @@ const AddInfoForm = () => {
                              className={classes.inputBox} 
                              {...register("lastName")}
                              />
+
                              
                         </Grid>
+                        {addOptions.fetchUrl==="addStudent"&&<Grid item xs={12} lg={4}>
+                            <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }} className={classes.inputBox} >
+                                <InputLabel id="demo-simple-select-standard-label">Advisor</InputLabel>
+                                <Select
+                                labelId="demo-simple-select-standard-label"
+                                id="demo-simple-select-standard"
+                                value={selectedFaculty}
+                                onChange={handleChangeFaculty}
+                                label="Advisor"
+                                >
+                                {allFaculties&&allFaculties.map(faculty=><MenuItem value={faculty.name}>{faculty.name}</MenuItem>)}
+                                </Select>
+                            </FormControl>
+                        </Grid>}
                        
                         <Grid item xs={12} lg={4}>
                             <TextField
@@ -208,7 +268,10 @@ const AddInfoForm = () => {
                             }} }}
                              {...register("phone")}
                              className={classes.inputBox} 
+                             onBlur={(event)=>{validateForm(event,"phone")}} 
                               />
+                              {console.log("hiii",error)}
+                              <span id="phone" style={{color:"red",display:"none"}}>Wrong Number</span>
                         </Grid>
                         
                         <Grid item xs={12} lg={4}>
@@ -224,8 +287,9 @@ const AddInfoForm = () => {
                             }} }}
                              {...register("age")}
                              className={classes.inputBox} 
-                             
-                              />
+                             onBlur={(event)=>{validateForm(event,"age")}} 
+                            />
+                            <span id="age" style={{color:"red",display:"none"}}>Wrong Number</span>
                         </Grid>
                         <Grid item xs={12} lg={4}>
                             <TextField
@@ -240,7 +304,9 @@ const AddInfoForm = () => {
                             }} }}
                              {...register("email")}
                              className={classes.inputBox} 
+                             onBlur={(event)=>{validateForm(event,"email")}} 
                               />
+                              <span id="email" style={{color:"red",display:"none"}}>Wrong Number</span>
                         </Grid>
                         <Grid item xs={12} lg={4}>
                             <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }} className={classes.inputBox} >
@@ -330,8 +396,9 @@ const AddInfoForm = () => {
                              label={addOptions.fieldName}
                              className={classes.inputBox} 
                              {...register("_id")}
+                             onBlur={(event)=>{validateForm(event,"s_id")}} 
                              />
-                             
+                            <span id="s_id" style={{color:"red",display:"none"}}>Wrong Number</span>
                         </Grid>
 
 

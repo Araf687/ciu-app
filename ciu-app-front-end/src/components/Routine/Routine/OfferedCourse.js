@@ -14,6 +14,7 @@ const useStyles=makeStyles((theme)=>({
 function OfferedCourse(props) {
     const classes=useStyles();
     const courses=props.courses;
+    console.log(courses);
   return (
     <Grid container className={classes.root}>
         {courses && courses.map(data=><ParticularCourse id={data}></ParticularCourse>)}

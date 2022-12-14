@@ -1,4 +1,4 @@
-import { Grid, makeStyles } from '@material-ui/core';
+import { Grid, makeStyles, Menu, MenuItem } from '@material-ui/core';
 import { Button } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -7,6 +7,9 @@ import StudentWiseofferedCourse from './StudentWiseofferedCourse';
 import swal from 'sweetalert2';
 import CourseWiseList from './CourseWiseList';
 import ReAddCourse from './ReAddCourse';
+import {getNextSemester,changeObjFormatForDownload,formatedForReport} from '../functions';
+import { IoMdArrowDropdown } from 'react-icons/io';
+import { red } from '@material-ui/core/colors';
 
 
 const XLSX=require('xlsx');
@@ -44,6 +47,38 @@ const useStyles=makeStyles(theme=>({
   buttons:{
     textAlign:"center",
     padding:"10px"
+  },
+  dropDown:{
+    background:"#075baf",
+    width:'17%',
+    height:'99%',
+    display:'inline-block',
+    borderRadius:'0px 4px 4px 0px',
+    '&:hover':{
+      cursor:'pointer'
+    }
+  },
+  downloadBTN:{
+    padding:0,
+    display:'inline-block',
+    border:'4px solid #1976d2',
+    borderRadius:'5px',
+    marginLeft:"15px",
+    height:'38px',
+    width:'195px',
+  },
+  optSec:{
+    display:'inline-block',
+    color:'white',
+    fontWeight:'500',
+    background:'#1976d2',
+    width:'82%',
+    height:'99%',
+    borderRadius:'4px 0px 0px 4px',
+    '&:hover':{
+      cursor:'pointer'
+    }
+
   }
 }));
 
@@ -65,9 +100,11 @@ const CustomizedOfferList=(props) => {
   const [prevRemovedData,setPrevRemovedData]=useState([]);
   const [courseWiseList,setCourseWiseList]=useState(false);
   const [reAddCourse,setReAddCourse]=useState(false);
+  const [downloadType,setDownloadType]=useState('Download as List');
 
-  let i=1;
+  let i=1,customisedDataExist=true;
   const semester=props.semester;
+  // console.log(semester)
 
   const classes=useStyles();
 
@@ -82,6 +119,9 @@ const CustomizedOfferList=(props) => {
         credit=data._id.creditHours;
         console.log(credit)
         return credit;
+      }
+      else{
+        customisedDataExist=false;
       }
       
     })
@@ -129,7 +169,43 @@ const CustomizedOfferList=(props) => {
   const handleAddRemovedCourse=()=>{
 
   }
-  const handleClickDOwnload=()=>{
+  const handleClickDownload=()=>{
+    console.log(downloadType);
+    if(downloadType=='Download as List'){
+      const formatedObjArr=changeObjFormatForDownload(customizeData);
+      const myFile=`${'OfferList_'+getNextSemester()}.xlsx`;
+      const myWorksheet=XLSX.utils.json_to_sheet(formatedObjArr);
+      const myWorkbook=XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(myWorkbook,myWorksheet,"Course list");
+      XLSX.writeFile(myWorkbook,myFile);
+    
+    }
+    else{
+      fetch("http://localhost:5000/findAllStudentsName_Id")
+      .then(res=>res.json())
+      .then(data=>{
+        if('result' in data){
+          const formatedObj=formatedForReport(customizeData,data.result);
+          const myWorkbook=XLSX.utils.book_new();
+          const myFile=`${'OfferList_Report_'+getNextSemester()}.xlsx`;
+          Object.keys(formatedObj).forEach(item=>{
+            let tempObject=formatedObj[item],courseName=item;
+            const myWorksheet=XLSX.utils.json_to_sheet(tempObject);
+            XLSX.utils.book_append_sheet(myWorkbook,myWorksheet,courseName);
+          })
+          XLSX.writeFile(myWorkbook,myFile);
+        }
+        else{
+          swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong!',
+            footer: '<a href="">Why do I have this issue?</a>'
+          })
+        }
+      })
+
+    }
 
 
   }
@@ -147,11 +223,31 @@ const CustomizedOfferList=(props) => {
         .then(response => response.json())
         .then(data => {
           console.log(data);
-          console.log("get offer")
-          setCustomizeData(data[0].customiseList);
-          setPrevRemovedData(data[0].removalCourses.sort((a,b)=>{return a._id.slNo-a._id.slNo}));
-          console.log(data[0].removalCourses.sort((a,b)=>{return a._id.slNo-a._id.slNo}));
+          if(data.length){
+            console.log("get offer")
+            setCustomizeData(data[0].customiseList);
+            setPrevRemovedData(data[0].removalCourses.sort((a,b)=>{return a._id.slNo-a._id.slNo}));
+            console.log(data[0].removalCourses.sort((a,b)=>{return a._id.slNo-a._id.slNo}));
+          }
+          else{
+            swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Something went wrong! Please customise your generated offerlist first',
+            })
+          }
+          
     })},[])
+
+
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => {
+      setAnchorEl(event.currentTarget);
+    };
+    const handleClose = (e) => {
+      setAnchorEl(null);
+    };
     return (
       <section >
         <div style={{textAlign:"center",margin:"5px 0px"}}>
@@ -196,11 +292,11 @@ const CustomizedOfferList=(props) => {
                                    dltBatch={handleDeleteBatch}
                                    ></OfferTableRow>)
         } 
-
+        {/* {customisedDataExist&&<h5 style={{textAlign:'center',padding:'15px',margin:'10px 0px',borderRadius:'6px'}}>OfferList customization has not completed yet.</h5>} */}
         </div>
       
       :stWiseCourses==true && reAddCourse===false?<StudentWiseofferedCourse 
-      state={setStWiseCourses}  
+      state={setStWiseCourses}   
       showDlt={showDeleteBtn} 
       dltCourseStWIse={deleteCourseStudentWise} 
       data={customizeData}>
@@ -226,9 +322,32 @@ const CustomizedOfferList=(props) => {
                 Re-Add Course
           </Button>}
           
-          <Button variant="contained" style={{marginLeft:"15px"}} onClick={()=>{handleClickDOwnload()}}>
-            Download
-          </Button>
+          <div className={classes.downloadBTN}>
+            <div onClick={()=>{handleClickDownload()}} className={classes.optSec}>{downloadType}</div> 
+            <div className={classes.dropDown} onClick={handleClick}>
+              <IoMdArrowDropdown style={{color:'white'}}/>
+            </div>
+            <Menu
+                id="basic-menu"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-button',
+                }}
+              >
+                <MenuItem onClick={()=>{
+                  setDownloadType('Download as List')
+                  handleClose();
+                }}
+                >Download as List</MenuItem>
+                <MenuItem onClick={()=>{
+                  setDownloadType('Download as Report');
+                  handleClose();
+                  }}>Download as report</MenuItem>
+              </Menu>
+
+          </div>
       </div>}
       </section>
       

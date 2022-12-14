@@ -37,7 +37,7 @@ const ReAddCourseRow=(props)=> {
 
     let batch={};
     total.map(id=>{
-        const newId=id.toString().slice(0,3);
+        const newId=id.slice(0,3);
         if(!batch[newId]){
             batch[newId]=1;
         }

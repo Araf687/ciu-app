@@ -2,23 +2,35 @@ import SlideRow from './SlideRow';
 import { useContext, useEffect, useState } from 'react';
 import { routineContext } from './RoutineBoard';
 import {getNextSemester} from '../../functions';
+import { Button } from '@mui/material';
+import { FcOrgUnit } from "react-icons/fc";
+import Clashes from '../Clashes.js/Clashes';
+import {getFromSessionDb} from '../../SessionDB/SessionDB';
+import swal from 'sweetalert2';
 
  
 function RoutineSlide(props) {
-  let [option,check,clearClashObj,updateRoutine]=useContext(routineContext);
+  let [option,check,clearClashObj,updateRoutine,,]=useContext(routineContext);
+  console.log(option)
   const func_changeOfferedCourses=props.changeOfferdCourse;
   const [routineData,setRoutineData]=useState();
   const dataFor=props.day[0]==='S'?'slotsForST':props.day[0]==='M'?'slotsForMW':'slotsForTH';
-
+  const [showClash,setShowClash]=useState(false);
+  const clashIcon={backgroundColor:'white',borderRadius:'2px',marginRight:'5px',fontSize:'16px'}
+ 
   
   useEffect(()=>{
     if(option==='custom'){
       fetch(`http://localhost:5000/getRoutine/${getNextSemester()}`)
       .then(res=>res.json())
       .then(data=>{
+        console.log(data)
         if('data' in data){
-          console.log(data.data);
-          setRoutineData(data.data[0].routine);
+          if(data.data.length!==0){
+            console.log(data.data);
+            setRoutineData(data.data[0].routine);
+          }
+          
         }
         else{
           console.log(data.error); 
@@ -28,12 +40,14 @@ function RoutineSlide(props) {
       fetch("http://localhost:5000/getAllClassRooms")
       .then(res=>res.json())
       .then(data=>{
+        console.log(data);
             setRoutineData(data);
       })
     }
   },[])
   const changeRoutineData=(data,roomId,slot)=>{
     let SlotsPrevData,dataForSet=data,tmpRoutineData=routineData;
+    console.log(dataForSet);
 
     const indexOfPrevData=routineData.findIndex(data=>data._id===roomId)
     SlotsPrevData=typeof(routineData[indexOfPrevData][dataFor][slot])==='boolean'?null:routineData[indexOfPrevData][dataFor][slot];
@@ -41,6 +55,7 @@ function RoutineSlide(props) {
     //if the slot in which we want to set a data by dragging is null or empty
     if(SlotsPrevData===null){
       if(dataForSet.roomNo===''){//when the subject add in slot from subject section
+        console.log("drag in empty slot")
        const newData= tmpRoutineData.map(data=>{
          if(data._id===roomId){
           dataForSet.roomNo=roomId;
@@ -58,8 +73,8 @@ function RoutineSlide(props) {
 
         //when a course draged from a slot to another empty slot
         clearSlot(dataForSet.roomNo,dataForSet.timeSlot);//clear the slot in which we have to set new data
-        //clear the clash checking object because a subject has drag out from a slot 
-        dataForSet.timeSlot!==slot&&clearClashObj(dataForSet,dataFor,'singleData');
+        //clear the clash checking object because a subject has drag out from a slot  
+        clearClashObj(dataForSet,dataFor,'singleData');
         
         const newData=tmpRoutineData.map(data=>{
           if(data._id===roomId){
@@ -96,7 +111,9 @@ function RoutineSlide(props) {
         let prevSlotsRoom=dataForSet.roomNo,prevSlotsTimeSlot=dataForSet.timeSlot;
         let newRoutineData;
         //if slots are not same then the function clearClashObj will called
-        dataForSet.timeSlot!==slot&&clearClashObj(dataForSet,dataFor,'swipe',SlotsPrevData);
+        // dataForSet.timeSlot!==slot&&
+        clearClashObj(dataForSet,dataFor,'swipe',SlotsPrevData);
+        
         //swiping in the same row or same room
         if(roomId===prevSlotsRoom){
           newRoutineData=tmpRoutineData.map(data=>{
@@ -129,9 +146,9 @@ function RoutineSlide(props) {
             return data;
           })
           setRoutineData(newRoutineData);
-          
-
+          check(dataForSet,dataFor,SlotsPrevData);
         }
+
         
         
 
@@ -182,15 +199,31 @@ function RoutineSlide(props) {
     else{updateRoutine(dataFor,routineData);}
   }
 
+  const clickShowClashBtn=()=>{
+    setShowClash(true)
+    console.log(props.day);
+  }
   return (
-    <div>
-      <p style={{textAlign:'center',fontWeight:600}}>{props.day}</p>
-      <SlideRow heading={true} data={null}></SlideRow>
-      {routineData && routineData.map(data=><SlideRow 
-                      changeRoutineData={changeRoutineData}
-                      dataFor={dataFor}
-                      heading={false} 
-                      data={data}></SlideRow>)}
+    <div >
+      <br></br>
+      {showClash===false?
+      <>
+        <div style={{marginBottom:'15px'}}>
+          <span style={{textAlign:'center',fontWeight:600,fontSize:'18px',marginLeft:'3px',padding:'2px'}}>{props.day}</span>
+          <Button variant="contained" onClick={()=>{clickShowClashBtn()}} style={{float:'right',marginRight:'5px'}} size="medium">
+            <FcOrgUnit style={clashIcon}></FcOrgUnit> <span style={{paddingTop:'3px'}}>show clashes</span>
+          </Button>
+        </div>
+        <SlideRow heading={true} data={null}></SlideRow>
+        {routineData && routineData.map(data=><SlideRow 
+                        changeRoutineData={changeRoutineData}
+                        dataFor={dataFor}
+                        heading={false} 
+                        data={data}></SlideRow>)}
+      </>:
+    <Clashes setShowClash={setShowClash} 
+    day={props.day} clashCheckingObj={getFromSessionDb('clashInfo')}></Clashes>
+    }
 
     </div>
   )
